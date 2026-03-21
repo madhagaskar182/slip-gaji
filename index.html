@@ -87,7 +87,7 @@
 <body>
 
 <div class="card">
-  <h1>Buka Dokumen PDF</h1>
+  <h1>Slip Gaji RRI Tahuna</h1>
 
   <form id="pdfForm">
     <label for="tahun">Tahun</label>
@@ -116,10 +116,10 @@
       <option value="12_Desember">Desember</option>
     </select>
 
-    <label for="nama">Nama file (tanpa .pdf)</label>
+    <label for="nama">NIP / NIPPPK</label>
     <input type="text" id="nama" placeholder="Contoh: 199601292022031004" required />
 
-    <button type="submit">Buka / Download PDF</button>
+    <button type="submit">Download</button>
   </form>
 
   <div id="pesan" class="message"></div>
@@ -155,7 +155,6 @@
     const filePath = `${tahun}/${bulan}/${nama}.pdf`;
     const fullUrl = baseUrl + filePath;
 
-    pesan.textContent = 'Mengarahkan ke file...';
 
     // Membuka di tab baru
     const newTab = window.open(fullUrl, '_blank');
@@ -166,7 +165,7 @@
       
       const link = document.createElement('a');
       link.href = fullUrl;
-      link.textContent = 'Klik di sini untuk buka/download PDF';
+      link.textContent = 'Klik di sini untuk download PDF';
       link.target = '_blank';
       link.style.display = 'block';
       link.style.marginTop = '1rem';
