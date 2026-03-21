@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Akses PDF - Input Nama File</title>
+  <title>Akses PDF - Langsung Buka / Download</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -18,87 +18,88 @@
     }
     .card {
       background: white;
-      border-radius: 12px;
-      padding: 2rem 2.5rem;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
       width: 100%;
-      max-width: 480px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      max-width: 460px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+      text-align: center;
     }
     h1 {
-      text-align: center;
       color: #1e40af;
-      margin-bottom: 1.8rem;
+      margin: 0 0 1.8rem;
+      font-size: 1.6rem;
     }
     label {
       display: block;
-      margin: 1rem 0 0.4rem;
+      margin: 1.2rem 0 0.5rem;
       font-weight: 500;
       color: #334155;
+      text-align: left;
     }
     input, select {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.85rem;
       border: 1px solid #94a3b8;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
     }
     input:focus, select:focus {
       outline: none;
       border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
     }
     button {
       width: 100%;
-      margin-top: 1.8rem;
-      padding: 0.9rem;
+      margin-top: 2rem;
+      padding: 1rem;
       background: #2563eb;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 1.1rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
     button:hover {
       background: #1d4ed8;
+      transform: translateY(-1px);
     }
-    #result {
+    .message {
       margin-top: 1.5rem;
-      text-align: center;
-      font-weight: 500;
-    }
-    #pdfViewer {
-      width: 100%;
-      height: 70vh;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      margin-top: 1rem;
-      display: none;
+      font-size: 0.95rem;
+      color: #475569;
     }
     .error {
       color: #dc2626;
-      margin-top: 0.8rem;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+    .info {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #64748b;
     }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <h1>Akses Dokumen PDF</h1>
+  <h1>Buka Dokumen PDF</h1>
 
   <form id="pdfForm">
-    <label for="tahun">Tahun:</label>
+    <label for="tahun">Tahun</label>
     <select id="tahun" required>
       <option value="">Pilih tahun...</option>
       <option value="2026">2026</option>
       <option value="2027">2027</option>
       <option value="2028">2028</option>
-      <!-- tambahkan tahun lain sesuai kebutuhan -->
+      <!-- tambah tahun lain jika perlu -->
     </select>
 
-    <label for="bulan">Bulan:</label>
+    <label for="bulan">Bulan</label>
     <select id="bulan" required>
       <option value="">Pilih bulan...</option>
       <option value="01_Januari">Januari</option>
@@ -115,20 +116,25 @@
       <option value="12_Desember">Desember</option>
     </select>
 
-    <label for="nama">Nama file (tanpa .pdf):</label>
+    <label for="nama">Nama file (tanpa .pdf)</label>
     <input type="text" id="nama" placeholder="Contoh: 199601292022031004" required />
 
-    <button type="submit">Tampilkan PDF</button>
+    <button type="submit">Buka / Download PDF</button>
   </form>
 
-  <div id="result"></div>
-  <iframe id="pdfViewer" title="PDF Viewer"></iframe>
+  <div id="pesan" class="message"></div>
+  <div id="error" class="error"></div>
+
+  <div class="info">
+    File akan dibuka langsung di tab baru.<br>
+    Jika tidak terbuka otomatis → klik kanan → "Save link as..." untuk download.
+  </div>
 </div>
 
 <script>
   const form = document.getElementById('pdfForm');
-  const resultDiv = document.getElementById('result');
-  const viewer = document.getElementById('pdfViewer');
+  const pesan = document.getElementById('pesan');
+  const errorDiv = document.getElementById('error');
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -137,28 +143,43 @@
     const bulan = document.getElementById('bulan').value;
     const nama = document.getElementById('nama').value.trim();
 
+    errorDiv.textContent = '';
+    pesan.textContent = '';
+
     if (!tahun || !bulan || !nama) {
-      resultDiv.innerHTML = '<span class="error">Lengkapi semua field!</span>';
-      viewer.style.display = 'none';
+      errorDiv.textContent = 'Harap isi semua kolom!';
       return;
     }
 
-    // Bangun path raw GitHub
-    const base = 'https://raw.githubusercontent.com/madhagaskar182/testing/main/files/';
-    const path = `${tahun}/${bulan}/${nama}.pdf`;
-    const url = base + path;
+    const baseUrl = 'https://raw.githubusercontent.com/madhagaskar182/testing/main/files/';
+    const filePath = `${tahun}/${bulan}/${nama}.pdf`;
+    const fullUrl = baseUrl + filePath;
 
-    resultDiv.innerHTML = `Memuat: <strong>${nama}.pdf</strong> (${bulan} ${tahun})...`;
+    pesan.textContent = 'Mengarahkan ke file...';
 
-    viewer.src = url;
-    viewer.style.display = 'block';
+    // Membuka di tab baru
+    const newTab = window.open(fullUrl, '_blank');
 
-    // Fallback jika gagal dimuat setelah beberapa detik
-    setTimeout(() => {
-      if (!viewer.contentDocument || viewer.contentDocument.body.innerHTML.includes('404')) {
-        resultDiv.innerHTML = `<span class="error">File tidak ditemukan atau repository tidak publik.<br>URL yang dicoba:<br><small>${url}</small></span>`;
-      }
-    }, 5000);
+    // Cek apakah popup diblokir
+    if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+      errorDiv.textContent = 'Popup diblokir browser. Silakan izinkan popup atau klik link ini:';
+      
+      const link = document.createElement('a');
+      link.href = fullUrl;
+      link.textContent = 'Klik di sini untuk buka/download PDF';
+      link.target = '_blank';
+      link.style.display = 'block';
+      link.style.marginTop = '1rem';
+      link.style.color = '#2563eb';
+      link.style.fontWeight = '500';
+      
+      pesan.innerHTML = '';
+      pesan.appendChild(link);
+    } else {
+      setTimeout(() => {
+        pesan.textContent = 'File sedang dimuat di tab baru...';
+      }, 800);
+    }
   });
 </script>
 
