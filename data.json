@@ -1,0 +1,10 @@
+{
+  // Format key: "tahun-bulan-NIK" (NIK tanpa tanda hubung atau spasi)
+  "2026-03-199601292022031004": "files/2026/03_Maret/199601292022031004.pdf",
+  "2026-04-199601292022031004": "files/2026/04_April/199601292022031004.pdf",
+  
+  "2027-01-199601292022031004": "files/2027/01_Januari/199601292022031004.pdf",
+    
+  // Fallback jika tidak ditemukan
+  "default": "files/info-slip-tidak-ditemukan.pdf"
+}
