@@ -33,25 +33,10 @@
       color: #1e293b;
       text-align: center;
     }
-    h1 {
-      font-size: 2.1rem;
-      margin-bottom: 12px;
-      color: var(--primary-dark);
-    }
-    .subtitle {
-      color: #64748b;
-      margin-bottom: 32px;
-    }
-    .form-group {
-      margin-bottom: 24px;
-      text-align: left;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #334155;
-    }
+    h1 { font-size: 2.1rem; margin-bottom: 12px; color: var(--primary-dark); }
+    .subtitle { color: #64748b; margin-bottom: 32px; }
+    .form-group { margin-bottom: 24px; text-align: left; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #334155; }
     input, select {
       width: 100%;
       padding: 14px 16px;
@@ -83,14 +68,8 @@
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(99,102,241,0.3);
     }
-    .icon {
-      font-size: 3.5rem;
-      color: var(--primary);
-      margin-bottom: 20px;
-    }
-    @media (max-width: 500px) {
-      .card { padding: 30px 20px; }
-    }
+    .icon { font-size: 3.5rem; color: var(--primary); margin-bottom: 20px; }
+    @media (max-width: 500px) { .card { padding: 30px 20px; } }
   </style>
 </head>
 <body>
@@ -103,7 +82,7 @@
   <form id="formCari">
     <div class="form-group">
       <label for="nip">Nomor Pegawai / NIP</label>
-      <input type="text" id="nip" placeholder="Contoh: 10234 atau 19920312" required/>
+      <input type="text" id="nip" placeholder="Contoh: 10234 atau 19920312001" required/>
     </div>
 
     <div class="form-group">
@@ -114,6 +93,7 @@
         <option value="2024">2024</option>
         <option value="2025">2025</option>
         <option value="2026" selected>2026</option>
+        <option value="2027">2027</option>
       </select>
     </div>
 
@@ -151,17 +131,23 @@
     const bulan = document.getElementById('bulan').value;
 
     if (!nip || !tahun || !bulan) {
-      alert('Harap isi semua field!');
+      alert('Harap isi semua field dengan lengkap!');
       return;
     }
 
-    // Format nama file → sesuaikan dengan yang ada di server/folder slips
-    const fileName = `${nip}.pdf`;
-    const pdfPath = `files/${tahun}/${bulan}/${fileName}`;   // ubah path sesuai struktur folder
+    // Format path sesuai struktur folder: slips/tahun/bulan/nomor_pegawai.pdf
+    // Contoh: slips/2025/03/10234.pdf
+    const fileName = `${nip}.pdf`;                   // ← hanya nomor pegawai
+    const pdfPath = `files/${tahun}/${bulan}/${fileName}`;
 
-    // Buka di tab baru dengan viewer PDF.js
+    // Jika pakai pdf.js viewer (direkomendasikan agar tampilan lebih bagus & konsisten)
     const viewerUrl = `pdfjs/web/viewer.html?file=${encodeURIComponent(pdfPath)}`;
+    
+    // Buka di tab baru
     window.open(viewerUrl, '_blank');
+
+    // Alternatif sederhana (tanpa pdf.js viewer) → langsung buka PDF:
+    // window.open(pdfPath, '_blank');
   });
 </script>
 
