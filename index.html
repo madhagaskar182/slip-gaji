@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Viewer PDF + Download</title>
+  <title>RRI TAHUNA</title>
 
   <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -87,11 +87,12 @@
 <body>
 
 <div class="card">
-  <h1>Viewer PDF</h1>
+  <h1>Slip Gaji Pegawai</h1>
 
   <form id="pdfForm">
     <select id="tahun" required>
       <option value="">Tahun</option>
+      <option value="2025">2025</option>
       <option value="2026">2026</option>
       <option value="2027">2027</option>
     </select>
@@ -102,11 +103,19 @@
       <option value="02">Februari</option>
       <option value="03">Maret</option>
       <option value="04">April</option>
+      <option value="05">Mei</option>
+      <option value="06">Juni</option>
+      <option value="07">Juli</option>
+      <option value="08">Agusstus</option>
+      <option value="09">September</option>
+      <option value="10">Oktober</option>
+      <option value="11">November</option>
+      <option value="12">Desember</option>
     </select>
 
-    <input type="text" id="nama" placeholder="NIP / NIPPPK" required />
+    <input type="number" id="nama" placeholder="NIP / NIPPPK" required />
 
-    <button type="submit">Tampilkan PDF</button>
+    <button type="submit">Tampilkan Slip Gaji</button>
   </form>
 
   <div id="pesan"></div>
