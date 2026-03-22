@@ -58,20 +58,6 @@
       font-weight: bold;
     }
 
-    button:hover {
-      background: #1d4ed8;
-    }
-
-    .message {
-      margin-top: 1rem;
-      color: #475569;
-    }
-
-    .error {
-      color: red;
-      margin-top: 1rem;
-    }
-
     #viewerContainer {
       margin-top: 20px;
       display: none;
@@ -89,16 +75,12 @@
       margin-top: 10px;
     }
 
-    .controls button {
-      flex: 1;
-    }
-
     .download-btn {
       background: #16a34a;
     }
 
-    .download-btn:hover {
-      background: #15803d;
+    .error {
+      color: red;
     }
   </style>
 </head>
@@ -108,155 +90,42 @@
   <h1>Viewer PDF</h1>
 
   <form id="pdfForm">
-    <label>Tahun</label>
     <select id="tahun" required>
-      <option value="">Pilih tahun...</option>
+      <option value="">Tahun</option>
       <option value="2026">2026</option>
       <option value="2027">2027</option>
-      <option value="2028">2028</option>
     </select>
 
-    <label>Bulan</label>
     <select id="bulan" required>
-      <option value="">Pilih bulan...</option>
-      <option value="01">Januari</option>
-      <option value="02">Februari</option>
-      <option value="03">Maret</option>
-      <option value="04">April</option>
-      <option value="05">Mei</option>
-      <option value="06">Juni</option>
-      <option value="07">Juli</option>
-      <option value="08">Agustus</option>
-      <option value="09">September</option>
-      <option value="10">Oktober</option>
-      <option value="11">November</option>
-      <option value="12">Desember</option>
+      <option value="">Bulan</option>
+      <option value="01_Januari">Januari</option>
+      <option value="02_Februari">Februari</option>
     </select>
 
-    <label>Nama file (tanpa .pdf)</label>
-    <input type="text" id="nama" required />
+    <input type="text" id="nama" placeholder="Nama file" required />
 
     <button type="submit">Tampilkan PDF</button>
   </form>
 
-  <div id="pesan" class="message"></div>
+  <div id="pesan"></div>
   <div id="error" class="error"></div>
 
   <div id="viewerContainer">
     <canvas id="pdfCanvas"></canvas>
 
     <div class="controls">
-      <button id="prev">⬅ Prev</button>
-      <button id="next">Next ➡</button>
+      <button id="prev">Prev</button>
+      <button id="next">Next</button>
     </div>
 
-    <button id="downloadBtn" class="download-btn">⬇ Download PDF</button>
+    <button id="downloadBtn" class="download-btn">Download PDF</button>
 
-    <div class="message" id="pageInfo"></div>
+    <div id="pageInfo"></div>
   </div>
 </div>
 
-<script>
-const form = document.getElementById('pdfForm');
-const pesan = document.getElementById('pesan');
-const errorDiv = document.getElementById('error');
-const canvas = document.getElementById('pdfCanvas');
-const ctx = canvas.getContext('2d');
-const viewer = document.getElementById('viewerContainer');
-
-const prevBtn = document.getElementById('prev');
-const nextBtn = document.getElementById('next');
-const downloadBtn = document.getElementById('downloadBtn');
-const pageInfo = document.getElementById('pageInfo');
-
-let pdfDoc = null;
-let currentPage = 1;
-let currentUrl = '';
-
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-async function renderPage(num) {
-  const page = await pdfDoc.getPage(num);
-  const viewport = page.getViewport({ scale: 1.5 });
-
-  canvas.height = viewport.height;
-  canvas.width = viewport.width;
-
-  await page.render({
-    canvasContext: ctx,
-    viewport: viewport
-  }).promise;
-
-  pageInfo.textContent = `Halaman ${num} dari ${pdfDoc.numPages}`;
-}
-
-form.addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  const tahun = document.getElementById('tahun').value;
-  const bulan = document.getElementById('bulan').value;
-  const nama = document.getElementById('nama').value
-    .trim()
-    .replace(/[^a-zA-Z0-9_-]/g, '');
-
-  errorDiv.textContent = '';
-  pesan.textContent = '';
-  viewer.style.display = 'none';
-
-  if (!tahun || !bulan || !nama) {
-    errorDiv.textContent = 'Harap isi semua kolom!';
-    return;
-  }
-
-  const baseUrl = 'https://raw.githubusercontent.com/madhagaskar182/testing/main/files/';
-  const url = `${baseUrl}${tahun}/${bulan}/${nama}.pdf`;
-
-  pesan.textContent = 'Memuat PDF...';
-
-  try {
-    const check = await fetch(url, { method: 'HEAD' });
-    if (!check.ok) throw new Error('File tidak ditemukan');
-
-    currentUrl = url;
-
-    pdfDoc = await pdfjsLib.getDocument(url).promise;
-    currentPage = 1;
-
-    await renderPage(currentPage);
-
-    viewer.style.display = 'block';
-    pesan.textContent = '';
-
-  } catch (err) {
-    errorDiv.textContent = err.message;
-  }
-});
-
-prevBtn.onclick = () => {
-  if (currentPage <= 1) return;
-  currentPage--;
-  renderPage(currentPage);
-};
-
-nextBtn.onclick = () => {
-  if (currentPage >= pdfDoc.numPages) return;
-  currentPage++;
-  renderPage(currentPage);
-};
-
-// DOWNLOAD
-downloadBtn.onclick = () => {
-  if (!currentUrl) return;
-
-  const link = document.createElement('a');
-  link.href = currentUrl;
-  link.download = '';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-</script>
+<!-- Script eksternal -->
+<script src="script.js"></script>
 
 </body>
 </html>
