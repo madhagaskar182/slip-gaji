@@ -14,37 +14,42 @@
 <div class="card">
 
   <!-- LOGO -->
-  <img src="images/logo.png" alt="Logo" class="logo">
+  <img src="images/logo.png" alt="Logo" class="logo"
+        onerror="this.src='https://via.placeholder.com/110'">
 
   <h1>Slip Gaji Pegawai</h1>
 
   <form id="pdfForm">
-    <select id="tahun" required>
-      <option value="">Pilih Tahun</option>
-      <option value="2026">2026</option>
-      <option value="2027">2027</option>
-    </select>
+  <label>Tahun</label>
+  <select id="tahun" required>
+    <option value="">Pilih Tahun</option>
+    <option value="2026">2026</option>
+    <option value="2027">2027</option>
+  </select>
 
-    <select id="bulan" required>
-      <option value="">Pilih Bulan</option>
-      <option value="01">Januari</option>
-      <option value="02">Februari</option>
-      <option value="03">Maret</option>
-      <option value="04">April</option>
-      <option value="05">Mei</option>
-      <option value="06">Juni</option>
-      <option value="07">Juli</option>
-      <option value="08">Agustus</option>
-      <option value="09">September</option>
-      <option value="10">Oktober</option>
-      <option value="11">November</option>
-      <option value="12">Desember</option>
-    </select>
+  <label>Bulan</label>
+  <select id="bulan" required>
+    <option value="">Pilih Bulan</option>
+    <option value="01">Januari</option>
+    <option value="02">Februari</option>
+    <option value="03">Maret</option>
+    <option value="04">April</option>
+    <option value="05">Mei</option>
+    <option value="06">Juni</option>
+    <option value="07">Juli</option>
+    <option value="08">Agustus</option>
+    <option value="09">September</option>
+    <option value="10">Oktober</option>
+    <option value="11">November</option>
+    <option value="12">Desember</option>
+  </select>
 
-    <input type="text" id="nama" placeholder="NIP / NIPPPK" required>
+  <label>NIP / NIPPPK</label>
+  <input type="text" id="nama" placeholder="Masukkan NIP / NI PPPK"
+       pattern="[0-9]+" inputmode="numeric" required>
 
-    <button type="submit">Tampilkan Slip Gaji</button>
-  </form>
+  <button type="submit">Tampilkan Slip Gaji</button>
+</form>
 
   <div id="pesan"></div>
   <div id="error" class="error"></div>
@@ -53,6 +58,13 @@
     <canvas id="pdfCanvas"></canvas>
     <button id="downloadBtn" class="download-btn">Download PDF</button>
   </div>
+
+  <div id="viewerContainer">
+  <canvas id="pdfCanvas"></canvas>
+  <button id="downloadBtn" class="download-btn">Download PDF</button>
+</div>
+
+<p class="footer-text">Dibuat oleh Keuangan RRI Tahuna</p>
 
 </div>
 
