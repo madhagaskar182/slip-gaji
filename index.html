@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RRI TAHUNA</title>
+  <title>Viewer PDF Scroll</title>
 
   <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -23,60 +23,46 @@
       border-radius: 16px;
       padding: 2rem;
       width: 100%;
-      max-width: 650px;
+      max-width: 700px;
       box-shadow: 0 15px 35px rgba(0,0,0,0.12);
       text-align: center;
     }
 
-    h1 {
-      color: #1e40af;
-    }
-
-    label {
-      display: block;
-      margin-top: 1rem;
-      text-align: left;
-    }
-
-    input, select {
+    input, select, button {
       width: 100%;
       padding: 0.8rem;
-      margin-top: 0.4rem;
+      margin-top: 0.6rem;
       border-radius: 8px;
-      border: 1px solid #94a3b8;
     }
 
     button {
-      width: 100%;
-      margin-top: 1.2rem;
-      padding: 0.9rem;
       background: #2563eb;
       color: white;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
       font-weight: bold;
+      cursor: pointer;
     }
 
     #viewerContainer {
       margin-top: 20px;
       display: none;
+      max-height: 70vh;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f8fafc;
     }
 
     canvas {
       width: 100%;
-      border: 1px solid #ccc;
-      margin-top: 10px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
     }
 
     .download-btn {
       background: #16a34a;
+      margin-top: 10px;
     }
 
     .error {
@@ -87,10 +73,10 @@
 <body>
 
 <div class="card">
-  <h1>Slip Gaji Pegawai</h1>
+  <h2>Viewer PDF Scroll</h2>
 
   <form id="pdfForm">
-    <select id="tahun" required>
+   <select id="tahun" required>
       <option value="">Tahun</option>
       <option value="2025">2025</option>
       <option value="2026">2026</option>
@@ -113,24 +99,19 @@
       <option value="12">Desember</option>
     </select>
 
-    <input type="text" id="nama" placeholder="NIP / NIPPPK" pattern="[0-9]*" inputmode="numeric" required />
+    <input type="text" id="nama" placeholder="Nama file" required />
 
-    <button type="submit">Tampilkan Slip Gaji</button>
+    <button type="submit">Tampilkan PDF</button>
   </form>
+
+  <button id="downloadBtn" class="download-btn">⬇ Download PDF</button>
 
   <div id="pesan"></div>
   <div id="error" class="error"></div>
 
-  <div id="viewerContainer">
-    <canvas id="pdfCanvas"></canvas>
-
-    <button id="downloadBtn" class="download-btn">Download PDF</button>
-
-    <div id="pageInfo"></div>
-  </div>
+  <div id="viewerContainer"></div>
 </div>
 
-<!-- Script eksternal -->
 <script src="script.js"></script>
 
 </body>
