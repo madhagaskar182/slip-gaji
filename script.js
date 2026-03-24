@@ -10,9 +10,16 @@ let currentFileName = '';
 let dataPegawai = {};
 let pdfDoc = null;
 
-// =======================
-// LOAD DATA JSON
-// =======================
+// ================= HASH PASSWORD =================
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ================= LOAD JSON =================
 async function loadData() {
   try {
     const res = await fetch('dataPegawai.json');
@@ -25,32 +32,26 @@ async function loadData() {
 }
 loadData();
 
-// =======================
-// PDF.js setup
-// =======================
+// ================= PDF.js =================
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// =======================
-// RENDER 1 HALAMAN
-// =======================
+// ================= RENDER PAGE =================
 async function renderPage(pageNum, canvas) {
   const page = await pdfDoc.getPage(pageNum);
   const viewport = page.getViewport({ scale: 1.3 });
 
-  const context = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d');
   canvas.height = viewport.height;
   canvas.width = viewport.width;
 
   await page.render({
-    canvasContext: context,
+    canvasContext: ctx,
     viewport: viewport
   }).promise;
 }
 
-// =======================
-// LAZY LOADING OBSERVER
-// =======================
+// ================= LAZY LOAD =================
 function setupLazyLoading() {
   const observer = new IntersectionObserver(async (entries) => {
     for (const entry of entries) {
@@ -65,19 +66,13 @@ function setupLazyLoading() {
       }
     }
   }, {
-    root: null,
-    rootMargin: '100px',
-    threshold: 0.1
+    rootMargin: '100px'
   });
 
-  document.querySelectorAll('.pdf-page').forEach(canvas => {
-    observer.observe(canvas);
-  });
+  document.querySelectorAll('.pdf-page').forEach(c => observer.observe(c));
 }
 
-// =======================
-// SUBMIT FORM
-// =======================
+// ================= SUBMIT =================
 form.addEventListener('submit', async function(e) {
   e.preventDefault();
 
@@ -108,7 +103,9 @@ form.addEventListener('submit', async function(e) {
     return;
   }
 
-  if (pegawai.password !== password) {
+  const hashedInput = await hashPassword(password);
+
+  if (pegawai.password !== hashedInput) {
     errorDiv.textContent = 'Password salah!';
     return;
   }
@@ -119,74 +116,53 @@ form.addEventListener('submit', async function(e) {
   const baseUrl = 'https://cdn.jsdelivr.net/gh/madhagaskar182/testing@main/files/';
   const url = `${baseUrl}${tahun}/${bulan}/${namaFile}.pdf`;
 
-  pesan.textContent = 'Memuat dokumen...';
-
   try {
     currentUrl = url;
 
     pdfDoc = await pdfjsLib.getDocument(url).promise;
 
-    // Buat placeholder canvas dulu (belum render)
     for (let i = 1; i <= pdfDoc.numPages; i++) {
       const canvas = document.createElement('canvas');
       canvas.classList.add('pdf-page');
       canvas.dataset.page = i;
-
-      canvas.style.marginBottom = '10px';
-      canvas.style.background = '#f1f5f9';
-
       viewer.appendChild(canvas);
     }
 
     setupLazyLoading();
 
     viewerContainer.style.display = 'block';
-    pesan.textContent = `SLIP GAJI ${namaFile} BERHASIL DIMUAT`;
+    pesan.textContent = `Login berhasil - ${namaFile}`;
 
   } catch (err) {
     console.error(err);
-    errorDiv.textContent = 'PDF tidak ditemukan / gagal dimuat!';
+    errorDiv.textContent = 'PDF tidak ditemukan!';
   }
 });
 
-// =======================
-// DOWNLOAD
-// =======================
+// ================= DOWNLOAD =================
 downloadBtn.addEventListener('click', async () => {
-  if (!currentUrl) {
-    alert('Tidak ada file!');
-    return;
-  }
+  if (!currentUrl) return alert('Tidak ada file');
 
-  try {
-    const res = await fetch(currentUrl);
-    const blob = await res.blob();
+  const res = await fetch(currentUrl);
+  const blob = await res.blob();
 
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = currentFileName;
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  } catch (err) {
-    alert('Gagal download!');
-  }
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = currentFileName;
+  link.click();
 });
 
-// =======================
-// AUTO TAHUN
-// =======================
+// ================= AUTO TAHUN =================
 document.addEventListener('DOMContentLoaded', () => {
-  const tahunSekarang = new Date().getFullYear().toString();
-  const selectTahun = document.getElementById('tahun');
+  const tahun = new Date().getFullYear().toString();
+  const select = document.getElementById('tahun');
 
-  if (![...selectTahun.options].some(opt => opt.value === tahunSekarang)) {
+  if (![...select.options].some(o => o.value === tahun)) {
     const opt = document.createElement('option');
-    opt.value = tahunSekarang;
-    opt.textContent = tahunSekarang;
-    selectTahun.appendChild(opt);
+    opt.value = tahun;
+    opt.textContent = tahun;
+    select.appendChild(opt);
   }
 
-  selectTahun.value = tahunSekarang;
+  select.value = tahun;
 });
