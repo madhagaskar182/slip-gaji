@@ -131,7 +131,7 @@ form.addEventListener('submit', async function(e) {
     setupLazyLoading();
 
     viewerContainer.style.display = 'block';
-    pesan.textContent = `Login berhasil - ${namaFile}`;
+    pesan.textContent = `SLIP GAJI ${namaFile} BERHASIL DIMUAT`;
 
   } catch (err) {
     console.error(err);
