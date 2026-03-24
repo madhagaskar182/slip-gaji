@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Upload PDF</title>
+</head>
+<body>
+
+<h2>Dashboard Admin</h2>
+
+<input type="text" id="nip" placeholder="NIP"><br><br>
+<input type="text" id="namaFile" placeholder="Nama File"><br><br>
+<input type="text" id="password" placeholder="Password"><br><br>
+
+<input type="file" id="pdfFile" accept="application/pdf"><br><br>
+
+<button onclick="generateData()">Generate JSON</button>
+
+<pre id="output"></pre>
+
+<script>
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function generateData() {
+  const nip = document.getElementById('nip').value;
+  const namaFile = document.getElementById('namaFile').value;
+  const password = document.getElementById('password').value;
+
+  const hashed = await hashPassword(password);
+
+  const json = {
+    [nip]: {
+      namaFile: namaFile,
+      password: hashed
+    }
+  };
+
+  document.getElementById('output').textContent =
+    JSON.stringify(json, null, 2);
+}
+</script>
+
+</body>
+</html>
