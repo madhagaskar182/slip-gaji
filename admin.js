@@ -1,18 +1,13 @@
-// ================= GLOBAL =================
 let adminData = null;
 
-// ================= LOAD ADMIN JSON =================
+// LOAD ADMIN
 async function loadAdmin() {
-  try {
-    const res = await fetch('admin.json');
-    adminData = await res.json();
-  } catch (err) {
-    alert('Gagal load admin.json');
-  }
+  const res = await fetch('admin.json');
+  adminData = await res.json();
 }
 loadAdmin();
 
-// ================= HASH =================
+// HASH
 async function hashPassword(password) {
   const data = new TextEncoder().encode(password);
   const hash = await crypto.subtle.digest('SHA-256', data);
@@ -20,15 +15,10 @@ async function hashPassword(password) {
     .map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// ================= LOGIN =================
+// LOGIN
 async function login() {
   const user = document.getElementById('username').value;
   const pass = document.getElementById('password').value;
-
-  if (!adminData) {
-    alert('Data admin belum siap');
-    return;
-  }
 
   const hashed = await hashPassword(pass);
 
@@ -40,24 +30,24 @@ async function login() {
   }
 }
 
-// ================= DASHBOARD =================
+// SHOW DASHBOARD
 function showDashboard() {
   document.getElementById('loginPage').classList.add('hidden');
   document.getElementById('dashboard').classList.remove('hidden');
 }
 
-// ================= LOGOUT =================
+// LOGOUT
 function logout() {
   localStorage.removeItem('login');
   location.reload();
 }
 
-// ================= AUTO LOGIN =================
+// AUTO LOGIN
 if (localStorage.getItem('login') === 'true') {
   showDashboard();
 }
 
-// ================= TABLE =================
+// TABLE
 function tambahBaris() {
   const tbody = document.querySelector('#table tbody');
   const tr = document.createElement('tr');
@@ -76,7 +66,7 @@ function hapusBaris(btn) {
   btn.closest('tr').remove();
 }
 
-// ================= GENERATE JSON =================
+// GENERATE JSON
 async function generateJSON() {
   const rows = document.querySelectorAll('#table tbody tr');
   const data = {};
@@ -107,7 +97,7 @@ async function generateJSON() {
     JSON.stringify(data, null, 2);
 }
 
-// ================= COPY =================
+// COPY
 function copyJSON() {
   const text = document.getElementById('output').textContent;
   navigator.clipboard.writeText(text);
