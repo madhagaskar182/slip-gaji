@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel</title>
 
-<link rel="stylesheet" href="style-admin.css">
+<!-- CSS dari folder superuser -->
+<link rel="stylesheet" href="superuser/style-admin.css">
+
+<!-- JS -->
 <script defer src="admin.js"></script>
 </head>
 
@@ -15,47 +18,56 @@
 <div id="loginPage" class="login-box">
   <h2>🔐 Login Admin</h2>
 
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
+  <form onsubmit="event.preventDefault(); login();">
+    
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Masukkan username" required>
 
-  <button class="btn-primary" onclick="login()">Login</button>
-  <p id="loginError" style="color:red;"></p>
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Masukkan password" required>
+
+    <button type="submit" class="btn-primary">Login</button>
+  </form>
+
+  <p id="loginError" class="error-text"></p>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboard" class="container hidden">
 
-<h2>🧑‍💼 Generator JSON Pegawai</h2>
+  <h2>🧑‍💼 Generator JSON Pegawai</h2>
 
-<div class="top-actions">
-  <button class="btn-primary" onclick="tambahBaris()">➕ Tambah</button>
-  <button class="btn-success" onclick="generateJSON()">🚀 Generate</button>
-  <button class="btn-copy" onclick="copyJSON()">📋 Copy</button>
-  <button class="btn-danger" onclick="logout()">🚪 Logout</button>
-</div>
+  <div class="top-actions">
+    <button type="button" class="btn-primary" onclick="tambahBaris()">➕ Tambah</button>
+    <button type="button" class="btn-success" onclick="generateJSON()">🚀 Generate</button>
+    <button type="button" class="btn-copy" onclick="copyJSON()">📋 Copy</button>
+    <button type="button" class="btn-danger" onclick="logout()">🚪 Logout</button>
+  </div>
 
-<div class="table-wrapper">
-<table id="table">
-  <thead>
-    <tr>
-      <th>NIP</th>
-      <th>Nama File</th>
-      <th>Password</th>
-      <th>Aksi</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><input type="text"></td>
-      <td><input type="text"></td>
-      <td><input type="text"></td>
-      <td><button class="btn-danger" onclick="hapusBaris(this)">❌</button></td>
-    </tr>
-  </tbody>
-</table>
-</div>
+  <div class="table-wrapper">
+    <table id="table">
+      <thead>
+        <tr>
+          <th>NIP</th>
+          <th>Nama File</th>
+          <th>Password</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" placeholder="NIP"></td>
+          <td><input type="text" placeholder="Nama File PDF"></td>
+          <td><input type="text" placeholder="Password"></td>
+          <td>
+            <button type="button" class="btn-danger" onclick="hapusBaris(this)">❌</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-<div class="output" id="output"></div>
+  <div class="output" id="output"></div>
 
 </div>
 
