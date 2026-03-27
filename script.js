@@ -9,6 +9,7 @@ let currentUrl = '';
 let currentFileName = '';
 let dataPegawai = {};
 let pdfDoc = null;
+let dataLoaded = false; // ✅ FIX
 
 // ================= HASH PASSWORD =================
 async function hashPassword(password) {
@@ -24,7 +25,9 @@ async function loadData() {
   try {
     const res = await fetch('dataPegawai.json');
     if (!res.ok) throw new Error('Gagal load JSON');
+
     dataPegawai = await res.json();
+    dataLoaded = true; // ✅ FIX
   } catch (err) {
     console.error(err);
     errorDiv.textContent = 'Gagal memuat data pegawai!';
@@ -128,7 +131,15 @@ form.addEventListener('submit', async function(e) {
 
     pdfDoc = await pdfjsLib.getDocument(url).promise;
 
-    await renderAllPages();
+    // ✅ BUAT CANVAS PER PAGE
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const canvas = document.createElement('canvas');
+      canvas.classList.add('pdf-page');
+      canvas.dataset.page = i;
+      viewer.appendChild(canvas);
+    }
+
+    setupLazyLoading(); // ✅ tetap pakai lazy load
 
     viewerContainer.style.display = 'block';
     pesan.textContent = `SLIP GAJI ${namaFile} BERHASIL DIMUAT`;
@@ -144,13 +155,19 @@ form.addEventListener('submit', async function(e) {
 downloadBtn.addEventListener('click', async () => {
   if (!currentUrl) return alert('Tidak ada file');
 
-  const res = await fetch(currentUrl);
-  const blob = await res.blob();
+  try {
+    const res = await fetch(currentUrl);
+    if (!res.ok) throw new Error();
 
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = currentFileName;
-  link.click();
+    const blob = await res.blob();
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = currentFileName;
+    link.click();
+  } catch {
+    alert('Gagal download file');
+  }
 });
 
 // ================= AUTO TAHUN =================
