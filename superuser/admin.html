@@ -408,21 +408,39 @@ async function uploadJSON(){
   const url = "https://api.github.com/repos/valios-idn/slip-gaji/contents/dataPegawai.json";
 
   try{
-    await fetch(url,{
+
+    let sha = null;
+
+    // 🔥 CEK FILE EXIST
+    const get = await fetch(url,{
+      headers:{ Authorization:`Bearer ${token}` }
+    });
+
+    if(get.ok){
+      const data = await get.json();
+      sha = data.sha;
+    }
+
+    // 🔥 UPLOAD / UPDATE
+    const res = await fetch(url,{
       method:"PUT",
       headers:{
         Authorization:`Bearer ${token}`,
         "Content-Type":"application/json"
       },
       body:JSON.stringify({
-        message:"update dataPegawai",
-        content:content
+        message:"update dataPegawai otomatis",
+        content:content,
+        sha:sha
       })
     });
 
-    alert("✅ JSON berhasil diupload!");
+    if(!res.ok) throw new Error();
+
+    alert("✅ JSON berhasil diupload / diupdate!");
 
   }catch(e){
+    console.error(e);
     alert("❌ Upload JSON gagal!");
   }
 }
@@ -466,7 +484,7 @@ async function uploadAll(){
 }
 
 // PDF
-let files=[];
+let files=[]; 
 pdfDrop.onclick=()=>pdfFiles.click();
 pdfFiles.onchange=e=>{files=Array.from(e.target.files);renderFiles();};
 
