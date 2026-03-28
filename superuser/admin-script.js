@@ -178,24 +178,54 @@ function renderFiles(){
 
 function removeFile(i){files.splice(i,1);renderFiles();}
 
-async function uploadSingle(file,i,token){
-  const bar=document.getElementById("bar"+i);
-  const base64=await toBase64(file);
-  bar.style.width="30%";
+async function uploadSingle(file, i, token) {
+  const bar = document.getElementById("bar" + i);
+  
+  // Konversi file ke base64
+  const base64 = await toBase64(file);
+  
+  // === PERUBAHAN UTAMA ===
+  // Ubah nama file menjadi UPPERCASE (huruf besar semua)
+  const fileNameUpper = file.name.toUpperCase();
+  
+  // Buat path dengan nama file yang sudah diubah ke UPPERCASE
+  const path = `files/${tahun.value}/${bulan.value}/${fileNameUpper}`;
 
-  const fileName = file.name.toUpperCase();
-  const path=`files/${tahun.value}/${bulan.value}/${file.name}`;
-  const url=`https://api.github.com/repos/valios-idn/slip-gaji/contents/${path}`;
-  bar.style.width="60%";
+  const url = `https://api.github.com/repos/valios-idn/slip-gaji/contents/${path}`;
 
-  const res=await fetch(url,{
-    method:"PUT",
-    headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"},
-    body: JSON.stringify({message:"upload slip", content:base64})
-  });
+  // Update progress bar
+  bar.style.width = "30%";
 
-  if(!res.ok) throw new Error();
-  bar.style.width="100%";
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "Upload slip gaji",
+        content: base64
+      })
+    });
+
+    bar.style.width = "60%";
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Upload gagal dengan status ${res.status}`);
+    }
+
+    bar.style.width = "100%";
+    
+    console.log(`✅ Berhasil upload: ${fileNameUpper}`);
+    return fileNameUpper; // optional: return nama file yang sudah diubah
+
+  } catch (err) {
+    console.error(`Gagal upload ${file.name}:`, err);
+    bar.style.backgroundColor = "#ef4444"; // merah jika gagal
+    throw err;
+  }
 }
 
 function toBase64(file){
