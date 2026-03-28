@@ -78,7 +78,6 @@ function setupLazyLoading() {
 // ================= SUBMIT =================
 form.addEventListener('submit', async function(e) {
   e.preventDefault();
-
   if (!dataLoaded) {
     errorDiv.textContent = 'Data masih dimuat, coba lagi...';
     return;
@@ -98,6 +97,58 @@ form.addEventListener('submit', async function(e) {
     errorDiv.textContent = 'Semua field wajib diisi!';
     return;
   }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    errorDiv.textContent = 'Format email tidak valid!';
+    return;
+  }
+
+  // Cari pegawai (case-insensitive untuk email)
+  let pegawai = dataPegawai[email] || 
+                Object.values(dataPegawai).find(p => 
+                  p.email && p.email.toLowerCase() === email
+                );
+
+  if (!pegawai) {
+    errorDiv.textContent = 'Email tidak ditemukan!';
+    return;
+  }
+
+  const hashedInput = await hashPassword(password);
+  if (pegawai.password !== hashedInput) {
+    errorDiv.textContent = 'Password salah!';
+    return;
+  }
+
+  const namaFile = pegawai.namaFile;
+  currentFileName = namaFile + '.pdf';
+
+  const baseUrl = 'https://cdn.jsdelivr.net/gh/valios-idn/slip-gaji@main/files/';
+  
+  // Nama file di URL dibuat lowercase agar tidak case-sensitive
+  const url = `${baseUrl}${tahun}/${bulan}/${namaFile.toLowerCase()}.pdf`;
+
+  try {
+    currentUrl = url;
+    pdfDoc = await pdfjsLib.getDocument(url).promise;
+
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const canvas = document.createElement('canvas');
+      canvas.classList.add('pdf-page');
+      canvas.dataset.page = i;
+      viewer.appendChild(canvas);
+    }
+
+    setupLazyLoading();
+    viewerContainer.style.display = 'block';
+    pesan.textContent = `SLIP GAJI ${namaFile} BERHASIL DIMUAT`;
+  } catch (err) {
+    console.error(err);
+    errorDiv.textContent = 'PDF tidak ditemukan / gagal dimuat!';
+    pesan.textContent = '';
+  }
+});
 
   // Validasi email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
