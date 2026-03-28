@@ -183,16 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 // ===============PASSWORD=====================
-  const password = document.getElementById("password");
-const eyeIcon = document.getElementById("eyeIcon");
+  const passwordInput = document.getElementById("password");
+const togglePassword = document.getElementById("togglePassword");
 
-eyeIcon.addEventListener("click", () => {
-  if (password.type === "password") {
-    password.type = "text";
-    eyeIcon.textContent = "🙈";
+togglePassword.addEventListener("change", function () {
+  if (this.checked) {
+    passwordInput.type = "text";
   } else {
-    password.type = "password";
-    eyeIcon.textContent = "👁️";
+    passwordInput.type = "password";
   }
 });
   select.value = tahun;
