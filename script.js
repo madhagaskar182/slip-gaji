@@ -20,9 +20,8 @@ async function loadData() {
     dataPegawai = await res.json();
     dataLoaded = true;
 
-    console.log("DATA LOADED:", dataPegawai);
   } catch {
-    errorDiv.textContent = '❌ Gagal memuat data!';
+    errorDiv.textContent = 'Gagal memuat data!';
   }
 }
 loadData();
@@ -39,24 +38,34 @@ async function hashPassword(password) {
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// ================= RENDER =================
-async function renderAllPages() {
-  viewer.innerHTML = '';
+// ================= LAZY LOAD =================
+function setupLazyLoad() {
+  const observer = new IntersectionObserver(async (entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        const canvas = entry.target;
+        const pageNum = canvas.dataset.page;
 
-  for (let i = 1; i <= pdfDoc.numPages; i++) {
-    const page = await pdfDoc.getPage(i);
-    const viewport = page.getViewport({ scale: 1.2 });
+        if (!canvas.dataset.rendered) {
+          const page = await pdfDoc.getPage(pageNum);
+          const viewport = page.getViewport({ scale: 1.2 });
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+          const ctx = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
 
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
+          await page.render({
+            canvasContext: ctx,
+            viewport
+          }).promise;
 
-    await page.render({ canvasContext: ctx, viewport }).promise;
+          canvas.dataset.rendered = "true";
+        }
+      }
+    }
+  }, { rootMargin: '100px' });
 
-    viewer.appendChild(canvas);
-  }
+  document.querySelectorAll('.pdf-page').forEach(c => observer.observe(c));
 }
 
 // ================= SUBMIT =================
@@ -68,13 +77,12 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  const tahun = document.getElementById('tahun').value;
-  const bulan = document.getElementById('bulan').value;
   const email = document.getElementById('email').value.trim().toLowerCase();
   const password = document.getElementById('password').value.trim();
 
   errorDiv.textContent = '';
   pesan.textContent = 'Loading...';
+  viewer.innerHTML = '';
   viewerContainer.style.display = 'none';
 
   const pegawai = dataPegawai[email];
@@ -94,17 +102,26 @@ form.addEventListener('submit', async (e) => {
   const namaFile = pegawai.namaFile;
   currentFileName = namaFile + '.pdf';
 
-  const baseUrl = 'https://cdn.jsdelivr.net/gh/madhagaskar182/testing@main/files/';
-  const url = `${baseUrl}${tahun}/${bulan}/${namaFile}.pdf`;
+  // 🔥 FIXED PATH
+  const baseUrl = 'https://cdn.jsdelivr.net/gh/madhagaskar182/testing@main/files/2026/03/';
+  const url = `${baseUrl}${namaFile}.pdf`;
 
   try {
     pdfDoc = await pdfjsLib.getDocument(url).promise;
 
-    await renderAllPages();
+    // buat canvas placeholder
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const canvas = document.createElement('canvas');
+      canvas.classList.add('pdf-page');
+      canvas.dataset.page = i;
+      viewer.appendChild(canvas);
+    }
+
+    setupLazyLoad();
 
     currentUrl = url;
     viewerContainer.style.display = 'block';
-    pesan.textContent = `✅ Slip ${namaFile} berhasil dimuat`;
+    pesan.textContent = `Slip ${namaFile} berhasil dimuat`;
 
   } catch (err) {
     console.error(err);
@@ -131,18 +148,3 @@ document.getElementById('togglePass').onclick = () => {
   const input = document.getElementById('password');
   input.type = input.type === 'password' ? 'text' : 'password';
 };
-
-// AUTO TAHUN
-document.addEventListener('DOMContentLoaded', () => {
-  const tahunNow = new Date().getFullYear().toString();
-  const select = document.getElementById('tahun');
-
-  if (![...select.options].some(o => o.value === tahunNow)) {
-    const opt = document.createElement('option');
-    opt.value = tahunNow;
-    opt.textContent = tahunNow;
-    select.appendChild(opt);
-  }
-
-  select.value = tahunNow;
-});
