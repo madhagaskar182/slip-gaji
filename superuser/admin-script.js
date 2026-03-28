@@ -9,7 +9,7 @@ let jsonData = {};
 let files = [];
 
 // Token Global (sama untuk semua halaman)
-let GLOBAL_GITHUB_TOKEN = "_pat_11CAL3MIA03YlOdbk6DTFt_K7vkaYfLDFxgt5w5chcvjunGjaWA79oRknfplcB62Df4IBWLSBJw41Bw1j1"; // Token default
+let GLOBAL_GITHUB_TOKEN = "hub_pat_11CAL3MIA0GiKpa7mrdH13_QjxgBpaQsd80czUGfw0frJJU1rWt9KkWXClMgWIbf3B75OZACNDIfYo01LO"; // Token default
 
 // Elemen DOM
 let loginPage, app, dashboardPage, jsonPage, uploadPage;
