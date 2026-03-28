@@ -274,10 +274,10 @@ function showExcel(){
 // ================= JSON GENERATE =================
 async function generateJSON(){
 
-  const f = excelFile.files[0];
+  const file = excelFile.files[0];
 
-  if(!f){
-    alert("⚠️ Silakan upload file Excel terlebih dahulu!");
+  if(!file){
+    alert("⚠️ Upload file Excel dulu!");
     return;
   }
 
@@ -286,22 +286,32 @@ async function generateJSON(){
   reader.onload = async function(e){
     try{
 
-      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-      const sheet = wb.Sheets[wb.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(sheet);
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
 
-      if(data.length === 0){
-        alert("⚠️ File kosong atau format salah!");
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+      // 🔥 AMBIL DATA RAW (lebih aman)
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+      if(rows.length === 0){
+        alert("⚠️ File kosong / format salah!");
         return;
       }
 
       let result = {};
 
-      for(let row of data){
+      for(let row of rows){
 
-        const email = (row.email || "").toLowerCase().trim();
-        const nama = (row.namaFile || "").toUpperCase().trim();
-        const pass = (row.password || "").toString().trim();
+        // 🔥 NORMALISASI KEY (ANTI ERROR HEADER)
+        const normalized = {};
+        for(let key in row){
+          normalized[key.toLowerCase().replace(/\s/g,'')] = row[key];
+        }
+
+        const email = (normalized.email || "").toLowerCase().trim();
+        const nama = (normalized.namafile || "").toUpperCase().trim();
+        const pass = (normalized.password || "").toString().trim();
 
         if(!email || !nama || !pass) continue;
 
@@ -312,7 +322,7 @@ async function generateJSON(){
       }
 
       if(Object.keys(result).length === 0){
-        alert("⚠️ Data tidak valid!");
+        alert("⚠️ Data tidak terbaca!\nPastikan kolom: email, namaFile, password");
         return;
       }
 
@@ -323,13 +333,12 @@ async function generateJSON(){
 
     }catch(err){
       console.error(err);
-      alert("❌ Gagal membaca file Excel!");
+      alert("❌ Gagal membaca Excel!");
     }
   };
 
-  reader.readAsArrayBuffer(f);
+  reader.readAsArrayBuffer(file);
 }
-
 // UPLOAD JSON
 async function uploadJSON(){
 
