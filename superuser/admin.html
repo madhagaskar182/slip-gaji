@@ -3,232 +3,243 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JSON Generator</title>
+<title>Admin JSON Generator PRO</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
-/* GLOBAL */
 body {
   font-family: 'Segoe UI', monospace;
   background: #020617;
   color: #e2e8f0;
   margin: 0;
-  padding: 20px;
 }
 
-/* CONTAINER */
+/* LOGIN */
+.login-box {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background: #0f172a;
+  padding: 30px;
+  border-radius: 15px;
+  width: 300px;
+  text-align: center;
+}
+
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+button {
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+}
+
+/* APP */
 .container {
+  display: none;
+  padding: 20px;
   max-width: 900px;
   margin: auto;
 }
 
-/* CARD */
 .card {
   background: #0f172a;
-  padding: 25px;
-  border-radius: 18px;
-  box-shadow: 0 0 60px rgba(0,0,0,0.7);
+  padding: 20px;
+  border-radius: 15px;
 }
 
-/* HEADER */
-.header {
-  margin-bottom: 20px;
-}
-
-.title {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-/* DROP AREA */
+/* DROP */
 .drop-area {
   border: 2px dashed #334155;
-  border-radius: 12px;
   padding: 30px;
   text-align: center;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.drop-area.dragover {
-  border-color: #3b82f6;
-  background: rgba(59,130,246,0.1);
-}
-
-.drop-area p {
-  margin: 0;
-  color: #64748b;
-}
-
-/* BUTTON */
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
   border-radius: 10px;
-  border: none;
   cursor: pointer;
-  font-weight: bold;
 }
 
-.btn-generate {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-generate:hover {
-  background: #2563eb;
-}
-
-/* OUTPUT */
 textarea {
   width: 100%;
   height: 250px;
-  margin-top: 15px;
+  margin-top: 10px;
   background: #000;
   color: #22c55e;
-  border-radius: 10px;
-  padding: 15px;
-  font-family: monospace;
-  font-size: 13px;
-}
-
-/* STATUS */
-.status {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #38bdf8;
-}
-
-/* LOADING */
-.loading {
-  color: #facc15;
+  padding: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- LOGIN -->
+<div class="login-box" id="loginPage">
+  <div class="login-card">
+    <h2>🔐 Admin Login</h2>
+    <input type="password" id="adminPass" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="container" id="app">
   <div class="card">
+    <h2>⚡ JSON Generator PRO</h2>
 
-    <div class="header">
-      <div class="title">⚡ JSON Generator </div>
-    </div>
-
-    <!-- DROP AREA -->
     <div class="drop-area" id="dropArea">
-      <p>📂 Drag & Drop Excel di sini atau klik</p>
-      <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+      <p>Drag & Drop Excel atau klik</p>
+      <input type="file" id="fileInput" hidden>
     </div>
 
-    <button class="btn-generate" onclick="prosesExcel()">Generate & Download JSON</button>
+    <button onclick="generate()">Generate JSON</button>
+    <button onclick="downloadJSON()">Download JSON</button>
 
-    <div class="status" id="status"></div>
+    <input type="password" id="token" placeholder="GitHub Token">
+    <button onclick="uploadGitHub()">Upload ke GitHub</button>
 
-    <textarea id="output" placeholder="Preview JSON muncul di sini..."></textarea>
-
+    <textarea id="output"></textarea>
   </div>
 </div>
 
 <script>
-let fileGlobal = null;
-
-// DRAG & DROP
-const dropArea = document.getElementById("dropArea");
-const fileInput = document.getElementById("fileInput");
-
-dropArea.addEventListener("click", () => fileInput.click());
-
-fileInput.addEventListener("change", (e) => {
-  fileGlobal = e.target.files[0];
-  dropArea.querySelector("p").textContent = "📄 " + fileGlobal.name;
-});
-
-dropArea.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  dropArea.classList.add("dragover");
-});
-
-dropArea.addEventListener("dragleave", () => {
-  dropArea.classList.remove("dragover");
-});
-
-dropArea.addEventListener("drop", (e) => {
-  e.preventDefault();
-  dropArea.classList.remove("dragover");
-
-  fileGlobal = e.dataTransfer.files[0];
-  dropArea.querySelector("p").textContent = "📄 " + fileGlobal.name;
-});
-
-// HASH
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, '0')).join('');
+// LOGIN (simple hash)
+async function hash(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-// PROSES
-async function prosesExcel() {
-  const status = document.getElementById("status");
+// GANTI HASH PASSWORD ADMIN DI SINI
+const ADMIN_HASH = "5e884898da28047151d0e56f8dc6292773603d0d6aabbddf"; // contoh
 
-  if (!fileGlobal) {
-    alert("Upload file dulu!");
-    return;
+async function login(){
+  const pass = document.getElementById("adminPass").value;
+  const h = await hash(pass);
+
+  if(h.startsWith(ADMIN_HASH)){ // simple check
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("app").style.display="block";
+  }else{
+    alert("Password salah!");
   }
+}
 
-  status.textContent = "⏳ Memproses...";
-  status.classList.add("loading");
+// DRAG DROP
+let fileGlobal = null;
+const drop = document.getElementById("dropArea");
+const input = document.getElementById("fileInput");
+
+drop.onclick = ()=>input.click();
+
+input.onchange = e=>{
+  fileGlobal = e.target.files[0];
+  drop.innerText = fileGlobal.name;
+};
+
+drop.ondragover = e=>{
+  e.preventDefault();
+};
+
+drop.ondrop = e=>{
+  e.preventDefault();
+  fileGlobal = e.dataTransfer.files[0];
+  drop.innerText = fileGlobal.name;
+};
+
+// HASH PASSWORD USER
+async function hashPass(p){
+  const enc = new TextEncoder().encode(p);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+let dataResult = {};
+
+// GENERATE
+async function generate(){
+  if(!fileGlobal){ alert("Upload file!"); return; }
 
   const reader = new FileReader();
 
-  reader.onload = async function(e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
-
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = XLSX.utils.sheet_to_json(sheet);
+  reader.onload = async e=>{
+    const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(sheet);
 
     let result = {};
-    let count = 0;
 
-    for (let row of jsonData) {
-      const email = (row.email || "").toLowerCase().trim();
-      const namaFile = (row.namaFile || "").toUpperCase().trim();
-      const password = (row.password || "").toString().trim();
+    for(let r of json){
+      const email = (r.email||"").toLowerCase();
+      const nama = (r.namaFile||"").toUpperCase();
+      const pass = (r.password||"").toString();
 
-      if (!email || !namaFile || !password) continue;
+      if(!email||!nama||!pass) continue;
 
-      const hashed = await hashPassword(password);
-
-      result[email] = {
-        namaFile: namaFile,
-        password: hashed
+      result[email]={
+        namaFile:nama,
+        password: await hashPass(pass)
       };
-
-      count++;
     }
 
-    const jsonString = JSON.stringify(result, null, 2);
-
-    document.getElementById("output").value = jsonString;
-
-    // AUTO DOWNLOAD
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "dataPegawai.json";
-    link.click();
-
-    status.textContent = "✅ Berhasil! " + count + " data diproses & file didownload";
-    status.classList.remove("loading");
+    dataResult = result;
+    document.getElementById("output").value = JSON.stringify(result,null,2);
   };
 
   reader.readAsArrayBuffer(fileGlobal);
+}
+
+// DOWNLOAD
+function downloadJSON(){
+  const blob = new Blob([JSON.stringify(dataResult,null,2)]);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "dataPegawai.json";
+  a.click();
+}
+
+// UPLOAD GITHUB
+async function uploadGitHub(){
+  const token = document.getElementById("token").value;
+  if(!token) return alert("Token kosong!");
+
+  const repo = "USERNAME/REPO"; // ganti
+  const path = "dataPegawai.json";
+
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(dataResult,null,2))));
+
+  const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+  let sha=null;
+
+  const get = await fetch(url,{headers:{Authorization:`token ${token}`}});
+  if(get.ok){
+    const d=await get.json();
+    sha=d.sha;
+  }
+
+  await fetch(url,{
+    method:"PUT",
+    headers:{
+      Authorization:`token ${token}`,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      message:"update data",
+      content:content,
+      sha:sha
+    })
+  });
+
+  alert("Upload berhasil!");
 }
 </script>
 
