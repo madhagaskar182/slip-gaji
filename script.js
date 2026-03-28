@@ -9,7 +9,7 @@ let currentUrl = '';
 let currentFileName = '';
 let dataPegawai = {};
 let pdfDoc = null;
-let dataLoaded = false; // ✅ FIX
+let dataLoaded = false;
 
 // ================= HASH PASSWORD =================
 async function hashPassword(password) {
@@ -27,7 +27,7 @@ async function loadData() {
     if (!res.ok) throw new Error('Gagal load JSON');
 
     dataPegawai = await res.json();
-    dataLoaded = true; // ✅ FIX
+    dataLoaded = true;
   } catch (err) {
     console.error(err);
     errorDiv.textContent = 'Gagal memuat data pegawai!';
@@ -99,7 +99,7 @@ form.addEventListener('submit', async function(e) {
     return;
   }
 
-  // ✅ Validasi email
+  // Validasi email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     errorDiv.textContent = 'Format email tidak valid!';
@@ -131,7 +131,7 @@ form.addEventListener('submit', async function(e) {
 
     pdfDoc = await pdfjsLib.getDocument(url).promise;
 
-    // ✅ BUAT CANVAS PER PAGE
+    // Buat canvas per halaman
     for (let i = 1; i <= pdfDoc.numPages; i++) {
       const canvas = document.createElement('canvas');
       canvas.classList.add('pdf-page');
@@ -139,7 +139,7 @@ form.addEventListener('submit', async function(e) {
       viewer.appendChild(canvas);
     }
 
-    setupLazyLoading(); // ✅ tetap pakai lazy load
+    setupLazyLoading();
 
     viewerContainer.style.display = 'block';
     pesan.textContent = `SLIP GAJI ${namaFile} BERHASIL DIMUAT`;
@@ -170,8 +170,10 @@ downloadBtn.addEventListener('click', async () => {
   }
 });
 
-// ================= AUTO TAHUN =================
+// ================= DOM READY =================
 document.addEventListener('DOMContentLoaded', () => {
+
+  // AUTO TAHUN
   const tahun = new Date().getFullYear().toString();
   const select = document.getElementById('tahun');
 
@@ -182,9 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
     select.appendChild(opt);
   }
 
-// =============== PASSWORD TOGGLE =====================
-// =============== PASSWORD TOGGLE =====================
-document.addEventListener("DOMContentLoaded", () => {
+  select.value = tahun;
+
+  // ================= PASSWORD TOGGLE =================
   document.querySelectorAll(".toggle-password").forEach(icon => {
     icon.addEventListener("click", function () {
       const target = this.getAttribute("data-toggle");
@@ -201,4 +203,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
 });
