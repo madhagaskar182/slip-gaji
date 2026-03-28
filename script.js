@@ -5,82 +5,66 @@ const pesan = document.getElementById('pesan');
 const errorDiv = document.getElementById('error');
 const downloadBtn = document.getElementById('downloadBtn');
 
-let currentUrl = '';
-let currentFileName = '';
 let dataPegawai = {};
 let pdfDoc = null;
+let currentUrl = '';
+let currentFileName = '';
 let dataLoaded = false;
-
-// ================= HASH PASSWORD =================
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
 // ================= LOAD JSON =================
 async function loadData() {
   try {
-    const res = await fetch('dataPegawai.json');
-    if (!res.ok) throw new Error('Gagal load JSON');
+    const res = await fetch('./dataPegawai.json');
+    if (!res.ok) throw new Error();
 
     dataPegawai = await res.json();
     dataLoaded = true;
-  } catch (err) {
-    console.error(err);
-    errorDiv.textContent = 'Gagal memuat data pegawai!';
+
+    console.log("DATA LOADED:", dataPegawai);
+  } catch {
+    errorDiv.textContent = '❌ Gagal memuat data!';
   }
 }
 loadData();
+
+// ================= HASH =================
+async function hashPassword(password) {
+  const data = new TextEncoder().encode(password);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return [...new Uint8Array(hash)]
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 // ================= PDF.js =================
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// ================= RENDER PAGE =================
-async function renderPage(pageNum, canvas) {
-  const page = await pdfDoc.getPage(pageNum);
-  const viewport = page.getViewport({ scale: 1.3 });
+// ================= RENDER =================
+async function renderAllPages() {
+  viewer.innerHTML = '';
 
-  const ctx = canvas.getContext('2d');
-  canvas.height = viewport.height;
-  canvas.width = viewport.width;
+  for (let i = 1; i <= pdfDoc.numPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const viewport = page.getViewport({ scale: 1.2 });
 
-  await page.render({
-    canvasContext: ctx,
-    viewport: viewport
-  }).promise;
-}
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-// ================= LAZY LOAD =================
-function setupLazyLoading() {
-  const observer = new IntersectionObserver(async (entries) => {
-    for (const entry of entries) {
-      if (entry.isIntersecting) {
-        const canvas = entry.target;
-        const pageNum = parseInt(canvas.dataset.page);
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
 
-        if (!canvas.dataset.rendered) {
-          await renderPage(pageNum, canvas);
-          canvas.dataset.rendered = "true";
-        }
-      }
-    }
-  }, {
-    rootMargin: '100px'
-  });
+    await page.render({ canvasContext: ctx, viewport }).promise;
 
-  document.querySelectorAll('.pdf-page').forEach(c => observer.observe(c));
+    viewer.appendChild(canvas);
+  }
 }
 
 // ================= SUBMIT =================
-form.addEventListener('submit', async function(e) {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   if (!dataLoaded) {
-    errorDiv.textContent = 'Data masih dimuat, coba lagi...';
+    errorDiv.textContent = 'Data belum siap!';
     return;
   }
 
@@ -91,20 +75,7 @@ form.addEventListener('submit', async function(e) {
 
   errorDiv.textContent = '';
   pesan.textContent = 'Loading...';
-  viewer.innerHTML = '';
   viewerContainer.style.display = 'none';
-
-  if (!tahun || !bulan || !email || !password) {
-    errorDiv.textContent = 'Semua field wajib diisi!';
-    return;
-  }
-
-  // Validasi email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    errorDiv.textContent = 'Format email tidak valid!';
-    return;
-  }
 
   const pegawai = dataPegawai[email];
 
@@ -113,9 +84,9 @@ form.addEventListener('submit', async function(e) {
     return;
   }
 
-  const hashedInput = await hashPassword(password);
+  const hashed = await hashPassword(password);
 
-  if (pegawai.password !== hashedInput) {
+  if (pegawai.password !== hashed) {
     errorDiv.textContent = 'Password salah!';
     return;
   }
@@ -127,82 +98,51 @@ form.addEventListener('submit', async function(e) {
   const url = `${baseUrl}${tahun}/${bulan}/${namaFile}.pdf`;
 
   try {
-    currentUrl = url;
-
     pdfDoc = await pdfjsLib.getDocument(url).promise;
 
-    // Buat canvas per halaman
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-      const canvas = document.createElement('canvas');
-      canvas.classList.add('pdf-page');
-      canvas.dataset.page = i;
-      viewer.appendChild(canvas);
-    }
+    await renderAllPages();
 
-    setupLazyLoading();
-
+    currentUrl = url;
     viewerContainer.style.display = 'block';
-    pesan.textContent = `SLIP GAJI ${namaFile} BERHASIL DIMUAT`;
+    pesan.textContent = `✅ Slip ${namaFile} berhasil dimuat`;
 
   } catch (err) {
     console.error(err);
-    errorDiv.textContent = 'PDF tidak ditemukan / gagal dimuat!';
+    errorDiv.textContent = 'PDF tidak ditemukan!';
     pesan.textContent = '';
   }
 });
 
 // ================= DOWNLOAD =================
 downloadBtn.addEventListener('click', async () => {
-  if (!currentUrl) return alert('Tidak ada file');
+  if (!currentUrl) return;
 
-  try {
-    const res = await fetch(currentUrl);
-    if (!res.ok) throw new Error();
+  const res = await fetch(currentUrl);
+  const blob = await res.blob();
 
-    const blob = await res.blob();
-
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = currentFileName;
-    link.click();
-  } catch {
-    alert('Gagal download file');
-  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = currentFileName;
+  a.click();
 });
 
-// ================= DOM READY =================
-document.addEventListener('DOMContentLoaded', () => {
+// ================= UI =================
+document.getElementById('togglePass').onclick = () => {
+  const input = document.getElementById('password');
+  input.type = input.type === 'password' ? 'text' : 'password';
+};
 
-  // AUTO TAHUN
-  const tahun = new Date().getFullYear().toString();
+// AUTO TAHUN
+document.addEventListener('DOMContentLoaded', () => {
+  const tahunNow = new Date().getFullYear().toString();
   const select = document.getElementById('tahun');
 
-  if (![...select.options].some(o => o.value === tahun)) {
+  if (![...select.options].some(o => o.value === tahunNow)) {
     const opt = document.createElement('option');
-    opt.value = tahun;
-    opt.textContent = tahun;
+    opt.value = tahunNow;
+    opt.textContent = tahunNow;
     select.appendChild(opt);
   }
 
-  select.value = tahun;
-
-  // ================= PASSWORD TOGGLE =================
-  document.querySelectorAll(".toggle-password").forEach(icon => {
-    icon.addEventListener("click", function () {
-      const target = this.getAttribute("data-toggle");
-      const input = document.querySelector(target);
-
-      if (!input) return;
-
-      if (input.type === "password") {
-        input.type = "text";
-        this.classList.replace("fa-eye", "fa-eye-slash");
-      } else {
-        input.type = "password";
-        this.classList.replace("fa-eye-slash", "fa-eye");
-      }
-    });
-  });
-
-});
+  select.value = tahunNow;
 });
