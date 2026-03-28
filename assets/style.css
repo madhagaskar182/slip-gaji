@@ -13,6 +13,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 15px;
 }
 
 /* CARD */
@@ -82,6 +83,11 @@ button {
   background: #2563eb;
   color: white;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #1d4ed8;
 }
 
 /* ERROR */
@@ -96,29 +102,45 @@ button {
   font-size: 13px;
 }
 
-/* PDF */
+/* ================= PDF VIEWER (IMPROVED) ================= */
 #viewerContainer {
   margin-top: 20px;
   background: #f1f5f9;
-  padding: 10px;
+  padding: 15px;
+  border-radius: 12px;
+
+  max-height: 500px;        /* batas tinggi */
+  overflow-y: auto;         /* scroll jika panjang */
+}
+
+/* biar PDF lebih tajam & proporsional */
+#pdfViewer canvas {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+/* SCROLLBAR (opsional biar cakep di PC) */
+#viewerContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+#viewerContainer::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
   border-radius: 10px;
 }
 
-#pdfViewer canvas {
-  width: 100%;
-  max-height: auto;
-}
-
-/* Footer Text */
-.footer-text
-    font-size: 12.5px;                      /* ukuran kecil */
-    text-align: center;                   /* rata tengah */
-    padding: 20px 0;                      /* jarak atas bawah */
-    margin-top: 30px;                     /* jarak dari konten di atas */
-    border-top: 1px solid rgba(200, 200, 200, 0.3);   /* garis tipis di atas (opsional) */
-    color: rgba(128, 128, 128, 0.65);           /* abu sedang */
-    opacity: 0.7;             /* transparansi utama */
-    letter-spacing: 0.3px;    /* sedikit jarak antar huruf biar lebih rapi */
+/* ================= FOOTER ================= */
+.footer-text {
+  font-size: 12.5px;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 30px;
+  border-top: 1px solid rgba(200, 200, 200, 0.3);
+  color: rgba(128, 128, 128, 0.65);
+  opacity: 0.7;
+  letter-spacing: 0.3px;
 }
 
 /* DOWNLOAD */
@@ -137,7 +159,7 @@ button {
   display: none;
 }
 
-/* RESPONSIVE */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 550px) {
   .card {
     padding: 20px;
@@ -153,5 +175,9 @@ button {
 
   .footer-text {
     font-size: 10px;
+  }
+
+  #viewerContainer {
+    max-height: 400px;
   }
 }
