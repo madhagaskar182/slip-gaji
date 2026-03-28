@@ -183,14 +183,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 // ===============PASSWORD=====================
-  const passwordInput = document.getElementById("password");
-const togglePassword = document.getElementById("togglePassword");
+  document.querySelector(".toggle-password").addEventListener("click", function () {
+  const input = document.querySelector(this.getAttribute("toggle"));
 
-togglePassword.addEventListener("change", function () {
-  if (this.checked) {
-    passwordInput.type = "text";
+  if (input.type === "password") {
+    input.type = "text";
+    this.classList.remove("fa-eye");
+    this.classList.add("fa-eye-slash");
   } else {
-    passwordInput.type = "password";
+    input.type = "password";
+    this.classList.remove("fa-eye-slash");
+    this.classList.add("fa-eye");
   }
 });
   select.value = tahun;
