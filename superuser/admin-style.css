@@ -127,7 +127,10 @@ textarea{
   padding:10px;
 }
 
-  .toast{
+.hidden{ display:none; }
+
+/* TOAST */
+.toast{
   position: fixed;
   top: 20px;
   right: 20px;
@@ -149,5 +152,3 @@ textarea{
 .toast.error{
   background: #ef4444;
 }
-
-.hidden{ display:none; }
