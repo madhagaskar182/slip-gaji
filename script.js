@@ -183,19 +183,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 // =============== PASSWORD TOGGLE =====================
-document.querySelectorAll(".toggle-password").forEach(icon => {
-  icon.addEventListener("click", function () {
-    const target = this.getAttribute("toggle");
-    const input = document.querySelector(target);
+// =============== PASSWORD TOGGLE =====================
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".toggle-password").forEach(icon => {
+    icon.addEventListener("click", function () {
+      const target = this.getAttribute("data-toggle");
+      const input = document.querySelector(target);
 
-    if (!input) return; // aman dari error
+      if (!input) return;
 
-    if (input.type === "password") {
-      input.type = "text";
-      this.classList.replace("fa-eye", "fa-eye-slash");
-    } else {
-      input.type = "password";
-      this.classList.replace("fa-eye-slash", "fa-eye");
-    }
+      if (input.type === "password") {
+        input.type = "text";
+        this.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        input.type = "password";
+        this.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    });
   });
 });
