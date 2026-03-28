@@ -103,7 +103,7 @@ textarea {
     <button onclick="generate()">Generate JSON</button>
     <button onclick="downloadJSON()">Download JSON</button>
 
-    <input type="password" id="token" placeholder="GitHub Token">
+    <input type="password" id="token" placeholder="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">
     <button onclick="uploadGitHub()">Upload ke GitHub</button>
 
     <textarea id="output"></textarea>
@@ -119,7 +119,7 @@ async function hash(text){
 }
 
 // GANTI HASH PASSWORD ADMIN DI SINI
-const ADMIN_HASH = "5e884898da28047151d0e56f8dc6292773603d0d6aabbddf"; // contoh
+const ADMIN_HASH = "eb8dd3569264665279b7715826fcf2a291b074137704e18d06574f321fd91a58"; // contoh
 
 async function login(){
   const pass = document.getElementById("adminPass").value;
@@ -211,7 +211,7 @@ async function uploadGitHub(){
   const token = document.getElementById("token").value;
   if(!token) return alert("Token kosong!");
 
-  const repo = "USERNAME/REPO"; // ganti
+  const repo = "madhagaskar182/slip-gaji"; // ganti
   const path = "dataPegawai.json";
 
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(dataResult,null,2))));
