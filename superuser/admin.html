@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Excel → JSON Generator</title>
+<title>Excel → JSON Pro Tool</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -11,7 +11,7 @@
 /* GLOBAL */
 body {
   font-family: 'Segoe UI', monospace;
-  background: #0f172a;
+  background: #020617;
   color: #e2e8f0;
   margin: 0;
   padding: 20px;
@@ -19,50 +19,62 @@ body {
 
 /* CONTAINER */
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
 }
 
 /* CARD */
 .card {
-  background: #1e293b;
+  background: #0f172a;
   padding: 25px;
-  border-radius: 16px;
-  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  border-radius: 18px;
+  box-shadow: 0 0 60px rgba(0,0,0,0.7);
 }
 
-/* TITLE */
-h1 {
-  font-size: 22px;
-  margin-bottom: 10px;
+/* HEADER */
+.header {
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .subtitle {
   font-size: 13px;
   color: #94a3b8;
-  margin-bottom: 20px;
 }
 
-/* INPUT */
-input[type="file"] {
-  width: 100%;
-  padding: 12px;
-  background: #0f172a;
-  border: 1px solid #334155;
-  color: #cbd5f5;
-  border-radius: 10px;
+/* DROP AREA */
+.drop-area {
+  border: 2px dashed #334155;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.drop-area.dragover {
+  border-color: #3b82f6;
+  background: rgba(59,130,246,0.1);
+}
+
+.drop-area p {
+  margin: 0;
+  color: #64748b;
 }
 
 /* BUTTON */
 button {
-  margin-top: 10px;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
   width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
   font-weight: bold;
-  transition: 0.2s;
 }
 
 .btn-generate {
@@ -74,23 +86,13 @@ button {
   background: #2563eb;
 }
 
-.btn-download {
-  background: #10b981;
-  color: white;
-}
-
-.btn-download:hover {
-  background: #059669;
-}
-
 /* OUTPUT */
 textarea {
   width: 100%;
   height: 250px;
   margin-top: 15px;
-  background: #020617;
+  background: #000;
   color: #22c55e;
-  border: 1px solid #334155;
   border-radius: 10px;
   padding: 15px;
   font-family: monospace;
@@ -104,15 +106,9 @@ textarea {
   color: #38bdf8;
 }
 
-/* BADGE */
-.badge {
-  display: inline-block;
-  padding: 5px 10px;
-  background: #22c55e;
-  color: black;
-  border-radius: 8px;
-  font-size: 12px;
-  margin-bottom: 10px;
+/* LOADING */
+.loading {
+  color: #facc15;
 }
 </style>
 </head>
@@ -121,25 +117,57 @@ textarea {
 
 <div class="container">
   <div class="card">
-    
-    <div class="badge">⚡ JSON Generator Tool</div>
-    <h1>Excel → JSON Pegawai</h1>
-    <div class="subtitle">Upload Excel dan convert otomatis dengan hash SHA-256</div>
 
-    <input type="file" id="fileInput" accept=".xlsx, .xls">
-    
-    <button class="btn-generate" onclick="prosesExcel()">Generate JSON</button>
-    <button class="btn-download" onclick="downloadJSON()">Download JSON</button>
+    <div class="header">
+      <div class="title">⚡ Excel → JSON Generator PRO</div>
+      <div class="subtitle">Drag & Drop • SHA-256 • Auto Download</div>
+    </div>
+
+    <!-- DROP AREA -->
+    <div class="drop-area" id="dropArea">
+      <p>📂 Drag & Drop Excel di sini atau klik</p>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+    </div>
+
+    <button class="btn-generate" onclick="prosesExcel()">Generate & Download JSON</button>
 
     <div class="status" id="status"></div>
 
-    <textarea id="output" placeholder="Output JSON akan muncul di sini..."></textarea>
+    <textarea id="output" placeholder="Preview JSON muncul di sini..."></textarea>
 
   </div>
 </div>
 
 <script>
-let generatedData = {};
+let fileGlobal = null;
+
+// DRAG & DROP
+const dropArea = document.getElementById("dropArea");
+const fileInput = document.getElementById("fileInput");
+
+dropArea.addEventListener("click", () => fileInput.click());
+
+fileInput.addEventListener("change", (e) => {
+  fileGlobal = e.target.files[0];
+  dropArea.querySelector("p").textContent = "📄 " + fileGlobal.name;
+});
+
+dropArea.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropArea.classList.add("dragover");
+});
+
+dropArea.addEventListener("dragleave", () => {
+  dropArea.classList.remove("dragover");
+});
+
+dropArea.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropArea.classList.remove("dragover");
+
+  fileGlobal = e.dataTransfer.files[0];
+  dropArea.querySelector("p").textContent = "📄 " + fileGlobal.name;
+});
 
 // HASH
 async function hashPassword(password) {
@@ -150,17 +178,17 @@ async function hashPassword(password) {
     .map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// PROSES EXCEL
+// PROSES
 async function prosesExcel() {
-  const file = document.getElementById('fileInput').files[0];
-  const status = document.getElementById('status');
+  const status = document.getElementById("status");
 
-  if (!file) {
-    alert("Pilih file Excel dulu!");
+  if (!fileGlobal) {
+    alert("Upload file dulu!");
     return;
   }
 
-  status.textContent = "⏳ Memproses file...";
+  status.textContent = "⏳ Memproses...";
+  status.classList.add("loading");
 
   const reader = new FileReader();
 
@@ -172,10 +200,11 @@ async function prosesExcel() {
     const jsonData = XLSX.utils.sheet_to_json(sheet);
 
     let result = {};
+    let count = 0;
 
     for (let row of jsonData) {
       const email = (row.email || "").toLowerCase().trim();
-      const namaFile = (row.namaFile || "").trim();
+      const namaFile = (row.namaFile || "").toUpperCase().trim();
       const password = (row.password || "").toString().trim();
 
       if (!email || !namaFile || !password) continue;
@@ -186,35 +215,26 @@ async function prosesExcel() {
         namaFile: namaFile,
         password: hashed
       };
+
+      count++;
     }
 
-    generatedData = result;
+    const jsonString = JSON.stringify(result, null, 2);
 
-    document.getElementById("output").value =
-      JSON.stringify(result, null, 2);
+    document.getElementById("output").value = jsonString;
 
-    status.textContent = "✅ Berhasil generate JSON (" + Object.keys(result).length + " data)";
+    // AUTO DOWNLOAD
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "dataPegawai.json";
+    link.click();
+
+    status.textContent = "✅ Berhasil! " + count + " data diproses & file didownload";
+    status.classList.remove("loading");
   };
 
-  reader.readAsArrayBuffer(file);
-}
-
-// DOWNLOAD JSON
-function downloadJSON() {
-  if (!generatedData || Object.keys(generatedData).length === 0) {
-    alert("Belum ada data!");
-    return;
-  }
-
-  const blob = new Blob(
-    [JSON.stringify(generatedData, null, 2)],
-    { type: "application/json" }
-  );
-
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "dataPegawai.json";
-  link.click();
+  reader.readAsArrayBuffer(fileGlobal);
 }
 </script>
 
