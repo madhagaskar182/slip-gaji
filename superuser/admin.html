@@ -1,96 +1,114 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard PRO+</title>
-
-<!-- STYLING -->
-<link rel="stylesheet" href="admin-style.css">
-
-<!-- XLSX Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard PRO+</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
 <div id="toast" class="toast"></div>
 
-<!-- LOGIN -->
+<!-- LOGIN PAGE -->
 <div class="login" id="loginPage">
-  <div class="login-box">
-    <h2>🔐 Admin Login</h2>
-    <input type="password" id="adminPass">
-    <button onclick="login()">Login</button>
-  </div>
+    <div class="login-box">
+        <h2>🔐 Admin Login</h2>
+        <input type="password" id="adminPass" placeholder="Masukkan password admin">
+        <button onclick="login()">Login</button>
+    </div>
 </div>
 
-<!-- APP -->
+<!-- MAIN APP -->
 <div class="wrapper hidden" id="app">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <h3>⚡ ADMIN</h3>
-    <div class="menu" onclick="showPage('dashboard')">Dashboard</div>
-    <div class="menu" onclick="showPage('json')">JSON Generator</div>
-    <div class="menu" onclick="showPage('upload')">Upload Slip</div>
-    <button onclick="logout()" style="background:red; color:white;">Logout</button>
-  </div>
-
-  <!-- CONTENT -->
-  <div class="content">
-
-    <!-- DASHBOARD -->
-    <div id="dashboardPage" class="card">
-      <h2>👋 Selamat Datang</h2>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>⚡ ADMIN PANEL</h3>
+        <div class="menu" onclick="showPage('dashboard')">🏠 Dashboard</div>
+        <div class="menu" onclick="showPage('json')">📊 JSON Generator</div>
+        <div class="menu" onclick="showPage('upload')">📤 Upload Slip Gaji</div>
+        
+        <button id="btnLogout" style="background:red; color:white; margin-top:20px;">🚪 Logout</button>
     </div>
 
-    <!-- JSON -->
-    <div id="jsonPage" class="card hidden">
-      <h2>JSON Generator</h2>
+    <!-- CONTENT -->
+    <div class="content">
 
-      <div class="drop-area" id="excelDrop">
-        📊 Drag & Drop Excel / Klik
-        <input type="file" id="excelFile" hidden>
-      </div>
+        <!-- DASHBOARD -->
+        <div id="dashboardPage" class="card">
+            <h2>👋 Selamat Datang di Admin Dashboard</h2>
+            <p>Sistem Slip Gaji - Valios IDN</p>
+        </div>
 
-      <div id="jsonFileList"></div>
+        <!-- JSON GENERATOR -->
+        <div id="jsonPage" class="card hidden">
+            <h2>📊 JSON Generator</h2>
 
-      <button onclick="generateJSON()">Generate JSON</button>
+            <div class="drop-area" id="excelDrop">
+                📊 Drag & Drop File Excel / Klik untuk memilih
+                <input type="file" id="excelFile" accept=".xlsx,.xls" hidden>
+            </div>
 
-      <input type="text" id="tokenJson">
-      <button onclick="uploadJSON()">Upload JSON</button>
+            <div id="jsonFileList"></div>
 
-      <textarea id="jsonOutput"></textarea>
+            <button onclick="generateJSON()">Generate JSON</button>
+
+            <div style="margin:15px 0;">
+                <strong>Token GitHub:</strong><br>
+                <input type="text" id="tokenJson" style="width:100%;">
+            </div>
+            
+            <button onclick="uploadJSON()">Upload JSON ke GitHub</button>
+
+            <textarea id="jsonOutput" placeholder="JSON akan muncul di sini..." rows="15"></textarea>
+        </div>
+
+        <!-- UPLOAD SLIP -->
+        <div id="uploadPage" class="card hidden">
+            <h2>📤 Upload Slip Gaji</h2>
+
+            <div style="margin-bottom:15px;">
+                <select id="tahun">
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                </select>
+
+                <select id="bulan">
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+
+            <div class="drop-area" id="pdfDrop">
+                📂 Drag & Drop File PDF / Klik untuk memilih
+                <input type="file" id="pdfFiles" multiple accept=".pdf" hidden>
+            </div>
+
+            <div id="fileList"></div>
+
+            <div style="margin:15px 0;">
+                <strong>Token GitHub:</strong><br>
+                <input type="text" id="tokenUpload" style="width:100%;">
+            </div>
+            
+            <button onclick="uploadAll()">Upload Semua File</button>
+
+            <div id="status"></div>
+        </div>
+
     </div>
-
-    <!-- UPLOAD -->
-    <div id="uploadPage" class="card hidden">
-      <h2>Upload Slip Gaji</h2>
-
-      <select id="tahun">
-        <option>2026</option>
-        <option>2027</option>
-      </select>
-
-      <select id="bulan">
-        <option value="01">Januari</option>
-        <option value="02">Februari</option>
-      </select>
-
-      <div class="drop-area" id="pdfDrop">
-        📂 Drag & Drop PDF / Klik
-        <input type="file" id="pdfFiles" multiple hidden>
-      </div>
-
-      <div id="fileList"></div>
-
-      <input type="text" id="tokenUpload">
-      <button onclick="uploadAll()">Upload Semua</button>
-
-      <div id="status"></div>
-    </div>
-
-  </div>
 </div>
 
 <!-- SCRIPT -->
