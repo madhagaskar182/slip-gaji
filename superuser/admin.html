@@ -3,371 +3,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin JSON Generator PRO</title>
+<title>Admin Dashboard PRO+</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
 body {
+  margin: 0;
   font-family: 'Segoe UI', monospace;
   background: #020617;
   color: #e2e8f0;
-  margin: 0;
 }
 
-/* LOGIN */
-.login-box {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+.wrapper { display: flex; }
 
-.login-card {
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
   background: #0f172a;
-  padding: 30px;
-  border-radius: 15px;
-  width: 300px;
-  text-align: center;
+  height: 100vh;
+  padding: 20px;
 }
 
-/* INPUT & BUTTON */
-input, button {
-  width: 100%;
+.menu {
   padding: 10px;
-  margin-top: 10px;
+  cursor: pointer;
   border-radius: 8px;
-  border: none;
+}
+.menu:hover { background:#1e293b; }
+
+/* CONTENT */
+.content { flex:1; padding:20px; }
+
+.card {
+  background:#0f172a;
+  padding:20px;
+  border-radius:15px;
+  max-width:900px;
+}
+
+/* FORM */
+input,select,button {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
 }
 
 button {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: white;
-  cursor: pointer;
+  background:#3b82f6;
+  color:white;
+  cursor:pointer;
 }
 
-button:hover {
-  transform: scale(1.03);
+/* FILE LIST */
+.file-item {
+  background:#020617;
+  margin-top:5px;
+  padding:8px;
+  border-radius:8px;
 }
 
-/* APP */
-.container {
-  display: none;
-  padding: 20px;
+.file-top {
+  display:flex;
+  justify-content:space-between;
 }
 
-.card {
-  background: #0f172a;
-  padding: 20px;
-  border-radius: 15px;
-  max-width: 700px;
-  margin: auto;
+.remove { color:red; cursor:pointer; }
+
+/* PROGRESS */
+.progress {
+  height:6px;
+  background:#1e293b;
+  border-radius:10px;
+  margin-top:5px;
 }
 
-/* GRID */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+.bar {
+  height:100%;
+  width:0%;
+  background:#22c55e;
+  border-radius:10px;
+  transition:0.3s;
 }
 
-.full {
-  grid-column: span 2;
-}
-
-/* DROP */
-.drop-area {
-  border: 2px dashed #334155;
-  padding: 30px;
-  text-align: center;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.drop-area:hover {
-  border-color: #3b82f6;
-}
-
-/* FILE INFO */
-#fileInfo {
-  display: none;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-}
-
-#fileName {
-  color: #22c55e;
-}
-
-.remove-btn {
-  cursor: pointer;
-  color: red;
-  font-weight: bold;
-}
-
-/* OUTPUT */
-textarea {
-  width: 100%;
-  height: 250px;
-  margin-top: 10px;
-  background: #000;
-  color: #22c55e;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-/* STATUS */
-.status {
-  margin-top: 10px;
-  font-size: 13px;
-}
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .full {
-    grid-column: span 1;
-  }
-}
+.hidden { display:none; }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div class="login-box" id="loginPage">
-  <div class="login-card">
-    <h2>🔐 Admin Login</h2>
-    <input type="password" id="adminPass" placeholder="Password">
-    <button onclick="login()">Login</button>
-  </div>
+<div class="wrapper">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h3>⚡ ADMIN</h3>
+  <div class="menu" onclick="showPage('dashboard')">Dashboard</div>
+  <div class="menu" onclick="showPage('json')">JSON Generator</div>
+  <div class="menu" onclick="showPage('upload')">Upload Slip Gaji</div>
 </div>
 
-<!-- APP -->
-<div class="container" id="app">
-  <div class="card">
-    <h2>⚡ JSON Generator PRO</h2>
+<!-- CONTENT -->
+<div class="content">
 
-    <div class="form-grid">
+<!-- DASHBOARD -->
+<div id="dashboardPage" class="card">
+  <h2>👋 Selamat Datang</h2>
+</div>
 
-      <!-- DROP -->
-      <div class="drop-area full" id="dropArea">
-        <div id="dropContent">
-          <p>📂 Drag & Drop Excel atau klik</p>
-        </div>
+<!-- JSON -->
+<div id="jsonPage" class="card hidden">
+  <h2>JSON Generator</h2>
+  <input type="file" id="excelFile">
+  <button onclick="generateJSON()">Generate</button>
+  <textarea id="jsonOutput"></textarea>
+</div>
 
-        <div id="fileInfo">
-          <span id="fileName"></span>
-          <span class="remove-btn" onclick="removeFile()">✖</span>
-        </div>
+<!-- UPLOAD -->
+<div id="uploadPage" class="card hidden">
+  <h2>Upload Slip Gaji</h2>
 
-        <input type="file" id="fileInput" hidden>
-      </div>
+  <select id="tahun">
+    <option>2026</option>
+    <option>2027</option>
+  </select>
 
-      <!-- BUTTON -->
-      <button onclick="generate()">Generate JSON</button>
-      <button onclick="downloadJSON()">Download JSON</button>
+  <select id="bulan">
+    <option value="01">Januari</option>
+    <option value="02">Februari</option>
+    <option value="03">Maret</option>
+  </select>
 
-      <!-- TOKEN -->
-      <div class="full">
-        <input type="text" id="token" placeholder="GitHub Token">
-      </div>
+  <input type="text" id="token">
 
-      <!-- UPLOAD -->
-      <button class="full" onclick="uploadGitHub()">Upload ke GitHub</button>
+  <input type="file" id="pdfFiles" multiple accept="application/pdf">
 
-      <!-- STATUS -->
-      <div class="status full" id="status"></div>
+  <div id="fileList"></div>
 
-      <!-- OUTPUT -->
-      <textarea class="full" id="output"></textarea>
+  <button onclick="uploadAll()">Upload Semua</button>
 
-    </div>
-  </div>
+  <div id="status"></div>
+</div>
+
+</div>
 </div>
 
 <script>
-// ================= LOGIN =================
-const ADMIN_HASH = "eb8dd3569264665279b7715826fcf2a291b074137704e18d06574f321fd91a58";
+// ================= NAV =================
+function showPage(p){
+  dashboardPage.classList.add("hidden");
+  jsonPage.classList.add("hidden");
+  uploadPage.classList.add("hidden");
 
-async function hash(text){
-  const enc = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(p==="dashboard") dashboardPage.classList.remove("hidden");
+  if(p==="json") jsonPage.classList.remove("hidden");
+  if(p==="upload") uploadPage.classList.remove("hidden");
 }
 
-async function login(){
-  const pass = document.getElementById("adminPass").value;
-  const h = await hash(pass);
+// ================= TOKEN AUTO =================
+token.value = "_pat_11CAL3MIA03YlOdbk6DTFt_K7vkaYfLDFxgt5w5chcvjunGjaWA79oRknfplcB62Df4IBWLSBJw41Bw1j1";
 
-  if(h === ADMIN_HASH){
-    loginPage.style.display="none";
-    app.style.display="block";
-  } else {
-    alert("Password salah!");
-  }
-}
-
-// ================= ELEMENT =================
-const dropArea = document.getElementById("dropArea");
-const fileInput = document.getElementById("fileInput");
-const dropContent = document.getElementById("dropContent");
-const fileInfo = document.getElementById("fileInfo");
-const fileNameText = document.getElementById("fileName");
-const output = document.getElementById("output");
-const status = document.getElementById("status");
-
-let fileGlobal = null;
-let dataResult = {};
-
-// ================= FILE =================
-dropArea.onclick = () => fileInput.click();
-
-fileInput.onchange = e => setFile(e.target.files[0]);
-
-dropArea.ondragover = e => e.preventDefault();
-
-dropArea.ondrop = e => {
-  e.preventDefault();
-  setFile(e.dataTransfer.files[0]);
-};
-
-function setFile(file){
-  fileGlobal = file;
-  dropContent.style.display = "none";
-  fileInfo.style.display = "flex";
-  fileNameText.textContent = "📄 " + file.name;
-}
-
-function removeFile(){
-  fileGlobal = null;
-  dataResult = {};
-  fileInput.value = "";
-  output.value = "";
-  fileInfo.style.display = "none";
-  dropContent.style.display = "block";
-}
-
-// ================= HASH =================
+// ================= JSON =================
 async function hashPass(p){
-  const enc = new TextEncoder().encode(p);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
+  const enc=new TextEncoder().encode(p);
+  const buf=await crypto.subtle.digest("SHA-256",enc);
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-// ================= GENERATE =================
-async function generate(){
-  if(!fileGlobal){
-    alert("Upload file dulu!");
-    return;
-  }
+async function generateJSON(){
+  const f=excelFile.files[0];
+  if(!f) return alert("Upload Excel");
 
-  const reader = new FileReader();
+  const r=new FileReader();
+  r.onload=async e=>{
+    const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+    const data=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
 
-  reader.onload = async e => {
-    const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-    const sheet = wb.Sheets[wb.SheetNames[0]];
-    const json = XLSX.utils.sheet_to_json(sheet);
-
-    let result = {};
-
-    for(let r of json){
-      const email = (r.email||"").toLowerCase().trim();
-      const nama = (r.namaFile||"").toUpperCase().trim();
-      const pass = (r.password||"").toString().trim();
-
-      if(!email || !nama || !pass) continue;
-
-      result[email] = {
-        namaFile: nama,
-        password: await hashPass(pass)
+    let res={};
+    for(let d of data){
+      if(!d.email) continue;
+      res[d.email.toLowerCase()]={
+        namaFile:d.namaFile.toUpperCase(),
+        password:await hashPass(d.password)
       };
     }
 
-    dataResult = result;
-    output.value = JSON.stringify(result, null, 2);
+    jsonOutput.value=JSON.stringify(res,null,2);
   };
-
-  reader.readAsArrayBuffer(fileGlobal);
+  r.readAsArrayBuffer(f);
 }
 
-// ================= DOWNLOAD =================
-function downloadJSON(){
-  if(Object.keys(dataResult).length === 0){
-    alert("Belum ada data!");
-    return;
-  }
+// ================= FILE =================
+let files=[];
 
-  const blob = new Blob([JSON.stringify(dataResult,null,2)]);
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "dataPegawai.json";
-  a.click();
+pdfFiles.onchange=e=>{
+  files=Array.from(e.target.files);
+  renderFiles();
+};
+
+function renderFiles(){
+  fileList.innerHTML="";
+
+  files.forEach((f,i)=>{
+    const div=document.createElement("div");
+    div.className="file-item";
+
+    div.innerHTML=`
+      <div class="file-top">
+        ${f.name}
+        <span class="remove" onclick="removeFile(${i})">✖</span>
+      </div>
+      <div class="progress">
+        <div class="bar" id="bar${i}"></div>
+      </div>
+      <small id="status${i}">Menunggu...</small>
+    `;
+
+    fileList.appendChild(div);
+  });
+}
+
+function removeFile(i){
+  files.splice(i,1);
+  renderFiles();
 }
 
 // ================= UPLOAD =================
-async function uploadGitHub(){
+async function uploadAll(){
 
-  if(Object.keys(dataResult).length === 0){
-    alert("Generate data dulu!");
-    return;
+  if(files.length===0) return alert("Tidak ada file");
+
+  const t=token.value;
+  const th=tahun.value;
+  const bl=bulan.value;
+
+  for(let i=0;i<files.length;i++){
+    await uploadSingle(files[i],i,t,th,bl);
   }
 
-  const token = document.getElementById("token").value;
+  status.innerText="✅ Semua upload selesai";
+}
 
-  if(!token){
-    alert("Token kosong!");
-    return;
-  }
+async function uploadSingle(file,i,token,th,bl){
 
-  status.textContent = "⏳ Uploading...";
+  const bar=document.getElementById("bar"+i);
+  const stat=document.getElementById("status"+i);
 
-  const repo = "valios-idn/slip-gaji";
-  const path = "dataPegawai.json";
+  stat.innerText="Upload...";
 
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(dataResult,null,2))));
-  const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+  const base64=await toBase64(file);
+
+  bar.style.width="30%";
+
+  const repo="valios-idn/slip-gaji";
+  const path=`files/${th}/${bl}/${file.name}`;
+  const url=`https://api.github.com/repos/${repo}/contents/${path}`;
 
   try{
-    let sha = null;
 
-    const get = await fetch(url,{
-      headers:{ Authorization:`Bearer ${token}` }
+    // cek file
+    let sha=null;
+    const get=await fetch(url,{
+      headers:{Authorization:`Bearer ${token}`}
     });
 
     if(get.ok){
-      const d = await get.json();
-      sha = d.sha;
+      const d=await get.json();
+      sha=d.sha;
     }
 
-    const res = await fetch(url,{
+    bar.style.width="60%";
+
+    const res=await fetch(url,{
       method:"PUT",
       headers:{
         Authorization:`Bearer ${token}`,
         "Content-Type":"application/json"
       },
-      body: JSON.stringify({
-        message:"update dataPegawai otomatis",
-        content:content,
+      body:JSON.stringify({
+        message:"upload slip",
+        content:base64,
         sha:sha
       })
     });
 
-    const result = await res.json();
+    if(!res.ok) throw new Error();
 
-    if(!res.ok){
-      throw new Error(result.message);
-    }
+    bar.style.width="100%";
+    stat.innerText="✅ Berhasil";
 
-    status.textContent = "✅ Upload berhasil!";
-
-  }catch(err){
-    console.error(err);
-    status.textContent = "❌ " + err.message;
+  }catch(e){
+    stat.innerText="❌ Gagal";
   }
+}
+
+// ================= BASE64 =================
+function toBase64(file){
+  return new Promise(res=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.readAsDataURL(file);
+  });
 }
 </script>
 
