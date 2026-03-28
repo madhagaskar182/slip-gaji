@@ -37,10 +37,20 @@
     <div class="content">
 
         <!-- DASHBOARD -->
-        <div id="dashboardPage" class="card">
-            <h2>Selamat Datang di Admin Dashboard</h2>
-            <p>Sistem Slip Gaji - Valios IDN</p>
+<div id="dashboardPage" class="card">
+    <h2>Selamat Datang di Admin Dashboard</h2>
+    <p>Sistem Slip Gaji - Valios IDN</p>
+
+    <div style="margin-top: 30px;">
+        <h3>🔍 20 Email Terakhir yang Mencari Slip Gaji</h3>
+        <button onclick="loadRecentSearches()" style="margin-bottom: 15px;">🔄 Refresh Daftar</button>
+        
+        <div id="recentSearchesList" class="recent-files">
+            <!-- Data akan diisi oleh JavaScript -->
+            <p style="color:#888; text-align:center; padding:20px;">Klik tombol Refresh untuk memuat 20 email terbaru...</p>
         </div>
+    </div>
+</div>
 
         <!-- JSON GENERATOR -->
         <div id="jsonPage" class="card hidden">
