@@ -137,6 +137,13 @@ textarea{
   padding:10px;
 }
 
+.hidden{ display:none; }
+</style>
+</head>
+
+<body>
+<div id="toast" class="toast"></div>
+
 .toast{
   position: fixed;
   top: 20px;
@@ -159,12 +166,6 @@ textarea{
 .toast.error{
   background: #ef4444;
 }
-.hidden{ display:none; }
-</style>
-</head>
-
-<body>
-<div id="toast" class="toast"></div>
 
 <!-- LOGIN -->
 <div class="login" id="loginPage">
@@ -609,7 +610,7 @@ function toBase64(file){
     fr.readAsDataURL(file);
   });
 }
-</script>
+
 
 </body>
 </html>
