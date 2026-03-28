@@ -44,7 +44,6 @@ button {
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
   cursor: pointer;
-  transition: 0.2s;
 }
 
 button:hover {
@@ -83,12 +82,28 @@ button:hover {
   text-align: center;
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 .drop-area:hover {
   border-color: #3b82f6;
-  background: rgba(59,130,246,0.1);
+}
+
+/* FILE INFO */
+#fileInfo {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+#fileName {
+  color: #22c55e;
+}
+
+.remove-btn {
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
 }
 
 /* OUTPUT */
@@ -108,17 +123,11 @@ textarea {
   font-size: 13px;
 }
 
-/* TOKEN STYLE */
-#token {
-  letter-spacing: 2px;
-}
-
 /* RESPONSIVE */
 @media (max-width: 600px) {
   .form-grid {
     grid-template-columns: 1fr;
   }
-
   .full {
     grid-column: span 1;
   }
@@ -146,7 +155,15 @@ textarea {
 
       <!-- DROP -->
       <div class="drop-area full" id="dropArea">
-        <p>📂 Drag & Drop Excel atau klik</p>
+        <div id="dropContent">
+          <p>📂 Drag & Drop Excel atau klik</p>
+        </div>
+
+        <div id="fileInfo">
+          <span id="fileName"></span>
+          <span class="remove-btn" onclick="removeFile()">✖</span>
+        </div>
+
         <input type="file" id="fileInput" hidden>
       </div>
 
@@ -159,14 +176,14 @@ textarea {
         <input type="text" id="token" placeholder="GitHub Token">
       </div>
 
-      <!-- BUTTON FULL -->
+      <!-- UPLOAD -->
       <button class="full" onclick="uploadGitHub()">Upload ke GitHub</button>
 
       <!-- STATUS -->
       <div class="status full" id="status"></div>
 
       <!-- OUTPUT -->
-      <textarea class="full" id="output" placeholder="Hasil JSON akan muncul di sini..."></textarea>
+      <textarea class="full" id="output"></textarea>
 
     </div>
   </div>
@@ -194,37 +211,52 @@ async function login(){
   }
 }
 
-// ================= AUTO TOKEN =================
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("token").value = "_pat_11CAL3MIA0ajH8eltzw2Ob_VWJz5mpneuWtltJ6dJBi5O7Yz7tGZck1GQMhnV66pkLHVNDARITUfyysRDi";
-});
+// ================= ELEMENT =================
+const dropArea = document.getElementById("dropArea");
+const fileInput = document.getElementById("fileInput");
+const dropContent = document.getElementById("dropContent");
+const fileInfo = document.getElementById("fileInfo");
+const fileNameText = document.getElementById("fileName");
+const output = document.getElementById("output");
+const status = document.getElementById("status");
 
-// ================= DRAG DROP =================
 let fileGlobal = null;
+let dataResult = {};
 
+// ================= FILE =================
 dropArea.onclick = () => fileInput.click();
 
-fileInput.onchange = e => {
-  fileGlobal = e.target.files[0];
-  dropArea.innerHTML = "📄 " + fileGlobal.name;
-};
+fileInput.onchange = e => setFile(e.target.files[0]);
 
 dropArea.ondragover = e => e.preventDefault();
 
 dropArea.ondrop = e => {
   e.preventDefault();
-  fileGlobal = e.dataTransfer.files[0];
-  dropArea.innerHTML = "📄 " + fileGlobal.name;
+  setFile(e.dataTransfer.files[0]);
 };
 
-// ================= HASH PASSWORD =================
+function setFile(file){
+  fileGlobal = file;
+  dropContent.style.display = "none";
+  fileInfo.style.display = "flex";
+  fileNameText.textContent = "📄 " + file.name;
+}
+
+function removeFile(){
+  fileGlobal = null;
+  dataResult = {};
+  fileInput.value = "";
+  output.value = "";
+  fileInfo.style.display = "none";
+  dropContent.style.display = "block";
+}
+
+// ================= HASH =================
 async function hashPass(p){
   const enc = new TextEncoder().encode(p);
   const buf = await crypto.subtle.digest("SHA-256", enc);
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-
-let dataResult = {};
 
 // ================= GENERATE =================
 async function generate(){
@@ -276,7 +308,7 @@ function downloadJSON(){
   a.click();
 }
 
-// ================= UPLOAD GITHUB =================
+// ================= UPLOAD =================
 async function uploadGitHub(){
 
   if(Object.keys(dataResult).length === 0){
@@ -291,10 +323,9 @@ async function uploadGitHub(){
     return;
   }
 
-  const status = document.getElementById("status");
-  status.textContent = "⏳ Uploading ke GitHub...";
+  status.textContent = "⏳ Uploading...";
 
-  const repo = "valios-idn/slip-gaji"; // ⚠️ ganti kalau beda
+  const repo = "valios-idn/slip-gaji";
   const path = "dataPegawai.json";
 
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(dataResult,null,2))));
@@ -303,21 +334,15 @@ async function uploadGitHub(){
   try{
     let sha = null;
 
-    // ================= CEK FILE =================
     const get = await fetch(url,{
-      headers:{
-        Authorization:`Bearer ${token}`
-      }
+      headers:{ Authorization:`Bearer ${token}` }
     });
 
     if(get.ok){
       const d = await get.json();
       sha = d.sha;
-    } else {
-      console.log("GET ERROR:", await get.text());
     }
 
-    // ================= UPLOAD =================
     const res = await fetch(url,{
       method:"PUT",
       headers:{
@@ -332,18 +357,16 @@ async function uploadGitHub(){
     });
 
     const result = await res.json();
-    console.log("UPLOAD RESULT:", result);
 
     if(!res.ok){
-      throw new Error(result.message || "Upload gagal");
+      throw new Error(result.message);
     }
 
-    status.textContent = "✅ Upload berhasil ke GitHub!";
+    status.textContent = "✅ Upload berhasil!";
 
   }catch(err){
     console.error(err);
-    status.textContent = "❌ ERROR: " + err.message;
-    alert("Gagal upload:\n" + err.message);
+    status.textContent = "❌ " + err.message;
   }
 }
 </script>
