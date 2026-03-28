@@ -1,50 +1,118 @@
 {
-  "197001161992031000": { "namaFile": "JAMES AWAEH,S.SOS", "password": "16011970" },
-  "197401101998032004": { "namaFile": "MISSEL SAHAMBE", "password": "10011974" },
-  "197306121998031006": { "namaFile": "MARTHEN Z MONTONG,S,SOS", "password": "12061973" },
-  "199208152022031002": { "namaFile": "JAMIL MA'RUF,S.E.", "password": "15081992" },
-  "199503272022032007": { "namaFile": "HERLINA LUKMAN,S.SOS", "password": "27031995" },
-  "199606042022031014": { "namaFile": "ARJUN NURDIN,S.Tr.T", "password": "04061996" },
-  "199206232022032004": { "namaFile": "RAHMA NINGSI,A.Md", "password": "23061992" },
-  "199601292022031004": { "namaFile": "RAMADHANI SETIA ADI NUGRAHA,A.Md.Ak", "password": "d0c74f11ed2e6f496d8544e391e53937b830ef1aa9f2cbc7a3ae30acfe2e3470" },
-  "199807122022032016": { "namaFile": "FITRIANI RUSDI,A.Md.A.B", "password": "12071998" },
-  "200007102022032001": { "namaFile": "AISYAH FIRDAYATI HAFID,A.Md.A.P", "password": "10072000" },
-  "199707052022032009": { "namaFile": "MARYAM GUNAWAN,A.Md", "password": "05071997" },
-  "200203152025042003": { "namaFile": "PATRICIA SADIAKA", "password": "15032002" },
-  "199109152025041001": { "namaFile": "CANDRA NAIN HAPANTENDA", "password": "15091991" },
-  "199412072025041004": { "namaFile": "DIPO DWI PERKASA", "password": "07121994" },
-  "199403302025041002": { "namaFile": "HERWIN GEVIN", "password": "30031994" },
-  "199611222025042003": { "namaFile": "KRISTINE MANGUNDAP", "password": "22111996" },
-  "199905012025042002": { "namaFile": "MARIATUL", "password": "01051999" },
-  "199008052025041003": { "namaFile": "ADI SETIAWAN", "password": "05081990" },
-  "200001012025062027": { "namaFile": "MILANIA DAFFA RAMADHANI", "password": "01012000" },
-  "199912092025042001": { "namaFile": "BELLA SAVIORANI ROMPAS", "password": "09121999" },
-  "aandwee@gmail.com": { "namaFile": "AAN DWIJAYANTI, S.M.", "password": "4995f45aefcb9e2d803f9a11a954615475c56baf88040301ad3ff92ed2185b73" },
-  "198610092022211006": { "namaFile": "ALDIF RIVAN BAWOEL", "password": "09101986" },
-  "196808252022211001": { "namaFile": "ALEXANDER DALENGKADE", "password": "25081968" },
-  "198506262022211013": { "namaFile": "ALFA MAURI", "password": "26061985" },
-  "198904172022212008": { "namaFile": "ALVRINA TAMARINDANG", "password": "17041989" },
-  "198708092025211045": { "namaFile": "AMIR YUSUF", "password": "09081987" },
-  "198508092022211016": { "namaFile": "ANDREW AUGUST JOHANES PORAJOW,A.Md.KP", "password": "09081985" },
-  "197909302022211005": { "namaFile": "ANTHONIUS LAHAUBE, S.E", "password": "30091979" },
-  "197904242022212012": { "namaFile": "ARSITINI LAHAWIA, SS", "password": "24041979" },
-  "198807092022212009": { "namaFile": "AZIZAH ABUSAENG", "password": "09071988" },
-  "198406042025211047": { "namaFile": "DAVID YUSAK LAHAWIA", "password": "04061984" },
-  "196911042025212004": { "namaFile": "HADIJA MAKAGANSA", "password": "04111969" },
-  "197208302025211011": { "namaFile": "HENDRICO LUMBANTOBING", "password": "30081972" },
-  "199004152022212019": { "namaFile": "HERLIEN INEKCELSIS TAKASIHAENG", "password": "15041990" },
-  "198304082022211010": { "namaFile": "JULFAN GAFAR", "password": "08041983" },
-  "198710282022211010": { "namaFile": "KALEP LUKAS", "password": "28101987" },
-  "197503242022211005": { "namaFile": "MARTHENS REYNHOLD PARERA", "password": "24031975" },
-  "198405122025211061": { "namaFile": "MELKISEDEK DIAMARE, S.A.P.", "password": "12051984" },
-  "197712082022212007": { "namaFile": "MERRY KHRISTIN SASENGA, S.I.Kom", "password": "08121977" },
-  "197307122025211022": { "namaFile": "NATURAL KAEHE", "password": "12071973" },
-  "198811042024211001": { "namaFile": "NEEDYA JUMEL JOHANIS, SIP.", "password": "04111988" },
-  "198110082022212018": { "namaFile": "OLVY SISYE LUSYILLE JANIS", "password": "08101981" },
-  "197709072025211026": { "namaFile": "RANDWYK STEVEN GAGHAUBE", "password": "07091977" },
-  "199004272024211002": { "namaFile": "RASIT PETONENGAN, S.E.", "password": "27041990" },
-  "199109042024212001": { "namaFile": "RUTMIATI MANAHEDE, A.Md.Kom.", "password": "04091991" },
-  "198709292022212017": { "namaFile": "SRIYANI MARTHA ROPIAH", "password": "29091987" },
-  "198910212022212008": { "namaFile": "SULASTRI MENAUNG", "password": "21101989" },
-  "198403152022212018": { "namaFile": "SUMIATI MABOKO", "password": "15031984" }
+  "misselsahambe@gmail.com": {
+    "namaFile": "MISSEL SAHAMBE",
+    "password": "6856aea8ff41e077011923c59aa1d88c87f32ef1563bdfb7a867cd25a005f9e7"
+  },
+  "marthen.z.montong@gmail.com": {
+    "namaFile": "MARTHEN Z MONTONG,S,SOS",
+    "password": "b3613e9d6deafc26b87e7d44c14ba5388d8a3d2e697463e96039f1fd2f1e7c74"
+  },
+  "lukmanherlina03@gmail.com": {
+    "namaFile": "HERLINA LUKMAN,S.SOS",
+    "password": "fc0441ee6aab93056e1f93f7f653c00a9e22ab75e5ac816406e4939971fb86ec"
+  },
+  "arjunnurdin1996@gmail.com": {
+    "namaFile": "ARJUN NURDIN,S.Tr.T",
+    "password": "b2ff4a85406ada1848105f9a82a62bcc362b945ab02c9fc4865ed3f84056f628"
+  },
+  "ningsiidrus96@gmail.com": {
+    "namaFile": "RAHMA NINGSI,A.Md",
+    "password": "aa2e126774a27d11d56eab1b7f02e738fd973307204b75a517a1b8bfa248bb83"
+  },
+  "ramasetiaadi@gmail.com": {
+    "namaFile": "RAMADHANI SETIA ADI NUGRAHA,A.Md.Ak",
+    "password": "ff0a3025ade4b8b08cc0cb3c94c6a40261253b1680c1f2495e233dc90e94dcad"
+  },
+  "fitrianirusdipnr@gmail.com": {
+    "namaFile": "FITRIANI RUSDI,A.Md.A.B",
+    "password": "a76261187465c2d4ffbffdd05e2859b8eedc5c44a98afab5cff039eb17ff2226"
+  },
+  "aisyahhafidd@gmail.com": {
+    "namaFile": "AISYAH FIRDAYATI HAFID,A.Md.A.P",
+    "password": "dfc724092e2e0d06bdb88821e62e27546477bd0ac2527b38edb3fb4d6ecc5bec"
+  },
+  "maryamgunawan11@gmail.com": {
+    "namaFile": "MARYAM GUNAWAN,A.Md",
+    "password": "af05561c15b113563499a48b6af285f02ff63824bdd032313d3871878250f55c"
+  },
+  "patriciasadiaka03@gmail.com": {
+    "namaFile": "PATRICIA SADIAKA",
+    "password": "f13e14c8fcee79096a78d7351730f7e3f35be41690a9f7277b7e7039bc691617"
+  },
+  "hapantendacandra15@gmail.com": {
+    "namaFile": "CANDRA NAIN HAPANTENDA",
+    "password": "b9706dddfe2a3ae8619955b35ba5b7be2c7e45c8f7d08298301ac30fc4b8f923"
+  },
+  "dippodwiperkasa12@gmail.com": {
+    "namaFile": "DIPO DWI PERKASA",
+    "password": "dedd6a7f6abecad8164e1fc0328e25e786ebd0e2081d6aaa54bc3820f391ef8d"
+  },
+  "herwingevin@gmail.com": {
+    "namaFile": "HERWIN GEVIN",
+    "password": "5534e25779de7d9abb4a170d35da4ddb3da93f09e739573659852ad6cc9d66b2"
+  },
+  "inemangundap@gmail.com": {
+    "namaFile": "KRISTINE MANGUNDAP",
+    "password": "3cfbd5aeff6a9688c03b667ffc757088208d5f50afc9daf63a4c940517538281"
+  },
+  "mariatul1599@gmail.com": {
+    "namaFile": "MARIATUL",
+    "password": "747bed32504949df9946fc06a74307b6acc4ac25a054bcd16ab8ca3faa6f7c16"
+  },
+  "58setiawan.adi@gmail.com": {
+    "namaFile": "ADI SETIAWAN",
+    "password": "20bcf5fbd77faf8c44abed70da0a16faf709d9ef4f6ca7f455c3c4d6a543f790"
+  },
+  "ramadhanimilania@gmail.com": {
+    "namaFile": "MILANIA DAFFA RAMADHANI",
+    "password": "9f50caeb11a221d65cc43fe9ff69aa89774230ee67313be53a7b3c21c3849636"
+  },
+  "bellasaviorani@gmail.com": {
+    "namaFile": "BELLA SAVIORANI ROMPAS",
+    "password": "a5177d923af102f988ab38ec3ed0cb4500743290bfc72db0001558497a01f93a"
+  },
+  "aandwee@gmail.com": {
+    "namaFile": "AAN DWIJAYANTI, S.M.",
+    "password": "4995f45aefcb9e2d803f9a11a954615475c56baf88040301ad3ff92ed2185b73"
+  },
+  "aldifrivan04@gmail.com": {
+    "namaFile": "ALDIF RIVAN BAWOEL",
+    "password": "8be916b68ca1728d852609984038279b794c78707c6f595ddd329fbf1be890f8"
+  },
+  "axeldalengkade68@gmail.com": {
+    "namaFile": "ALEXANDER DALENGKADE",
+    "password": "f394440eb6039d93a51f46f7b580c004f07a07f11ca06a2834fe336b5b919cef"
+  },
+  "alfamauri525@gmail.com": {
+    "namaFile": "ALFA MAURI",
+    "password": "00a9793fa2ad63443a837f3bf1ea5d07b689940a39869d37fffc61b3f2c19c1e"
+  },
+  "alvrinatamarindangt17@gmail.com": {
+    "namaFile": "ALVRINA TAMARINDANG",
+    "password": "bfc2d12adf0891843f80ca2c09cd0bf73555f3f4c51928e353e9256ca1e2736b"
+  },
+  "amiryusufff.0809@gmail.com": {
+    "namaFile": "AMIR YUSUF",
+    "password": "02dbbdd1450604c12f148551c5b012b891cd3ac843fd33aef95147cff285123b"
+  },
+  "andre.rritahuna@gmail.com": {
+    "namaFile": "ANDREW AUGUST JOHANES PORAJOW,A.Md.KP",
+    "password": "4cea2ea8f5d383a9175ab5654cea7124791f6a7961abf717470d9e3ac12f3c22"
+  },
+  "anthoniuslahaube@gmail.com": {
+    "namaFile": "ANTHONIUS LAHAUBE, S.E",
+    "password": "d3b6a1076f8cfe0cc5d43530710f842a512a351d290e5c5ce0e4af3cc8f5a170"
+  },
+  "arsitinilahawia@ymail.com": {
+    "namaFile": "ARSITINI LAHAWIA, SS",
+    "password": "e4a8cd666d421a2c5ae65c3b45cead98800f1005fda6a1a3fa3e319b46a9668e"
+  },
+  "menaungs@gmail.com": {
+    "namaFile": "SULASTRI MENAUNG",
+    "password": "648adb82cf2c2959826dd7cdba42610e30a5b0c8c09041b1cdffe3337d31f94a"
+  },
+  "mabokosumiati@gmail.com": {
+    "namaFile": "SUMIATI MABOKO",
+    "password": "05590bf28eff6d971a862ed5e8bcb6a9bda0d4d68a3013a16b99a8c9ab3207b6"
+  }
 }
