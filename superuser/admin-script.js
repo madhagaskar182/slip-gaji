@@ -328,6 +328,85 @@ function showToast(message, type = "success") {
     setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
+// ================= RECENT SEARCHES (EMAIL) DASHBOARD =================
+async function loadRecentSearches() {
+    const container = document.getElementById("recentSearchesList");
+    if (!container) return;
+
+    container.innerHTML = `<p style="color:#888; text-align:center;">⏳ Memuat daftar email terbaru...</p>`;
+
+    const token = tokenUpload.value.trim() || tokenJson.value.trim();
+    if (!token) {
+        container.innerHTML = `<p style="color:red;">⚠️ Token GitHub belum diisi.</p>`;
+        return;
+    }
+
+    try {
+        const repo = "valios-idn/slip-gaji";
+        const path = "recentSearches.json";
+        const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+        // Ambil file recentSearches.json
+        const res = await fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/vnd.github+json"
+            }
+        });
+
+        if (!res.ok) {
+            if (res.status === 404) {
+                container.innerHTML = `<p style="color:#888;">Belum ada data pencarian. Data akan muncul setelah ada user yang mencari slip gaji.</p>`;
+            } else {
+                throw new Error("Gagal mengambil data");
+            }
+            return;
+        }
+
+        const data = await res.json();
+        const content = JSON.parse(atob(data.content));
+
+        // content diasumsikan berupa array: [{email, timestamp}, ...] dengan index 0 = paling baru
+        let searches = Array.isArray(content) ? content : [];
+
+        if (searches.length === 0) {
+            container.innerHTML = `<p style="color:#888;">Belum ada data pencarian.</p>`;
+            return;
+        }
+
+        // Ambil maksimal 20 terbaru
+        searches = searches.slice(0, 20);
+
+        let html = `<div style="max-height:500px; overflow-y:auto;">`;
+        searches.forEach(item => {
+            const date = new Date(item.timestamp).toLocaleString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            html += `
+                <div style="padding:12px 10px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong>${item.email}</strong>
+                    </div>
+                    <div style="text-align:right; font-size:0.9em; color:#666;">
+                        ${date}
+                    </div>
+                </div>`;
+        });
+        html += `</div>`;
+
+        container.innerHTML = html;
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<p style="color:red;">❌ Gagal memuat data. Pastikan token GitHub valid.</p>`;
+    }
+}
+
 // ================= INIT & EVENT LISTENERS =================
 function initElements() {
     loginPage = document.getElementById("loginPage");
