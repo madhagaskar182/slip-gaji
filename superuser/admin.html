@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard PRO+</title>
 
-<link rel="stylesheet" href="/superuser/admin-style.css">
+<!-- STYLING -->
+<link rel="stylesheet" href="style.css">
+
+<!-- XLSX Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
 </head>
-
 <body>
-<div id="toast" class="toast"></div>
 
+<div id="toast" class="toast"></div>
 
 <!-- LOGIN -->
 <div class="login" id="loginPage">
@@ -23,75 +24,75 @@
   </div>
 </div>
 
+<!-- APP -->
 <div class="wrapper hidden" id="app">
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <h3>⚡ ADMIN</h3>
-  <div class="menu" onclick="showPage('dashboard')">Dashboard</div>
-  <div class="menu" onclick="showPage('json')">JSON Generator</div>
-  <div class="menu" onclick="showPage('upload')">Upload Slip</div>
-</div>
-
-<!-- CONTENT -->
-<div class="content">
-
-<!-- DASHBOARD -->
-<div id="dashboardPage" class="card">
-  <h2>👋 Selamat Datang</h2>
-</div>
-
-<!-- JSON -->
-<div id="jsonPage" class="card hidden">
-  <h2>JSON Generator</h2>
-
-  <div class="drop-area" id="excelDrop">
-    📊 Drag & Drop Excel / Klik
-    <input type="file" id="excelFile" hidden>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h3>⚡ ADMIN</h3>
+    <div class="menu" onclick="showPage('dashboard')">Dashboard</div>
+    <div class="menu" onclick="showPage('json')">JSON Generator</div>
+    <div class="menu" onclick="showPage('upload')">Upload Slip</div>
   </div>
 
-  <div id="jsonFileList"></div>
+  <!-- CONTENT -->
+  <div class="content">
 
-  <button onclick="generateJSON()">Generate JSON</button>
+    <!-- DASHBOARD -->
+    <div id="dashboardPage" class="card">
+      <h2>👋 Selamat Datang</h2>
+    </div>
 
-  <input type="text" id="tokenJson">
+    <!-- JSON -->
+    <div id="jsonPage" class="card hidden">
+      <h2>JSON Generator</h2>
 
-  <button onclick="uploadJSON()">Upload JSON</button>
+      <div class="drop-area" id="excelDrop">
+        📊 Drag & Drop Excel / Klik
+        <input type="file" id="excelFile" hidden>
+      </div>
 
-  <textarea id="jsonOutput"></textarea>
-</div>
+      <div id="jsonFileList"></div>
 
-<!-- UPLOAD -->
-<div id="uploadPage" class="card hidden">
-  <h2>Upload Slip Gaji</h2>
+      <button onclick="generateJSON()">Generate JSON</button>
 
-  <select id="tahun">
-    <option>2026</option>
-    <option>2027</option>
-  </select>
+      <input type="text" id="tokenJson">
+      <button onclick="uploadJSON()">Upload JSON</button>
 
-  <select id="bulan">
-    <option value="01">Januari</option>
-    <option value="02">Februari</option>
-  </select>
+      <textarea id="jsonOutput"></textarea>
+    </div>
 
-  <div class="drop-area" id="pdfDrop">
-    📂 Drag & Drop PDF / Klik
-    <input type="file" id="pdfFiles" multiple hidden>
+    <!-- UPLOAD -->
+    <div id="uploadPage" class="card hidden">
+      <h2>Upload Slip Gaji</h2>
+
+      <select id="tahun">
+        <option>2026</option>
+        <option>2027</option>
+      </select>
+
+      <select id="bulan">
+        <option value="01">Januari</option>
+        <option value="02">Februari</option>
+      </select>
+
+      <div class="drop-area" id="pdfDrop">
+        📂 Drag & Drop PDF / Klik
+        <input type="file" id="pdfFiles" multiple hidden>
+      </div>
+
+      <div id="fileList"></div>
+
+      <input type="text" id="tokenUpload">
+      <button onclick="uploadAll()">Upload Semua</button>
+
+      <div id="status"></div>
+    </div>
+
   </div>
-
-  <div id="fileList"></div>
-
-  <input type="text" id="tokenUpload">
-
-  <button onclick="uploadAll()">Upload Semua</button>
-
-  <div id="status"></div>
 </div>
 
-</div>
-</div>
-
-<script src="/superuser/admin-script.js" defer></script>
+<!-- SCRIPT -->
+<script src="script.js"></script>
 </body>
 </html>
