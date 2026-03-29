@@ -262,6 +262,14 @@ window.removeFile=removeFile;
 window.addEventListener("load", ()=>{
     initElements();
     setupEventListeners();
-    if(tokenDashboard) GLOBAL_GITHUB_TOKEN=tokenDashboard.value;
+
+    // ==================== PERBAIKAN TOKEN ====================
+    // Jika GLOBAL_GITHUB_TOKEN sudah ada, tampilkan di input dashboard
+    if(tokenDashboard){
+        if(!GLOBAL_GITHUB_TOKEN) GLOBAL_GITHUB_TOKEN = "hub_pat_11CAL3MIA0GiKpa7mrdH13_QjxgBpaQsd80czUGfw0frJJU1rWt9KkWXClMgWIbf3B75OZACNDIfYo01LO"; // default
+        tokenDashboard.value = GLOBAL_GITHUB_TOKEN;
+    }
+
     checkSession();
+});
 });
