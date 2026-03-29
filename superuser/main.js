@@ -76,20 +76,55 @@ generateJSONBtn.onclick = async () => {
 };
 
 // UPLOAD JSON
-uploadJSONBtn.onclick = async ()=>{
+uploadJSONBtn.onclick = async () => {
     const token = tokenJson.value.trim();
-    if(!token) return alert("Token kosong!");
+    if (!token) return alert("Token kosong!");
 
     const url = `https://api.github.com/repos/valios-idn/slip-gaji/contents/dataPegawai.json`;
-    const content = btoa(JSON.stringify(jsonData));
 
-    await fetch(url,{
-        method:"PUT",
-        headers:{Authorization:`Bearer ${token}`},
-        body: JSON.stringify({message:"update", content})
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(jsonData, null, 2))));
+
+    let sha = null;
+
+    // 🔍 CEK FILE SUDAH ADA / BELUM
+    try {
+        const get = await fetch(url, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (get.ok) {
+            const data = await get.json();
+            sha = data.sha; // wajib kalau update file
+        }
+    } catch (e) {
+        console.error("GET error:", e);
+    }
+
+    // 🚀 UPLOAD
+    const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: "update dataPegawai",
+            content: content,
+            sha: sha // 🔥 penting!
+        })
     });
 
-    alert("JSON uploaded!");
+    const result = await res.json();
+
+    // ✅ HANDLE RESPONSE
+    if (!res.ok) {
+        console.error(result);
+        alert("❌ Upload gagal: " + (result.message || ""));
+    } else {
+        alert("✅ JSON berhasil diupload!");
+        console.log(result);
+    }
+};
 };
 
 // PDF
