@@ -4,8 +4,7 @@ let files = [];
 let jsonData = {};
 
 // INIT
-window.onload = checkSession;
-
+window.addEventListener("DOMContentLoaded", checkSession);
 document.getElementById("loginBtn").onclick = login;
 document.getElementById("menuLogout").onclick = logout;
 
