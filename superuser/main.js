@@ -6,7 +6,10 @@ let jsonData = {};
 // INIT
 window.addEventListener("DOMContentLoaded", checkSession);
 document.getElementById("loginBtn").onclick = login;
-document.getElementById("menuLogout").onclick = logout;
+document.getElementById("menuLogout").onclick = () => {
+    resetApp();
+    logout();
+};
 
 document.addEventListener("click", resetIdleTimer);
 document.addEventListener("keydown", resetIdleTimer);
@@ -17,6 +20,12 @@ const pages = ["dashboardPage","jsonPage","uploadPage"];
 function showPage(page){
     pages.forEach(p => document.getElementById(p).classList.add("hidden"));
     document.getElementById(page+"Page").classList.remove("hidden");
+
+    // 🔥 reset saat pindah halaman
+    if(page !== "json"){
+        jsonOutput.value = "";
+        jsonFileList.innerHTML = "";
+    }
 }
 
 menuDashboard.onclick = ()=>showPage("dashboard");
@@ -172,3 +181,23 @@ function toBase64(file){
         fr.readAsDataURL(file);
     });
 }
+
+//RESET
+function resetApp(){
+    // reset JSON
+    jsonData = {};
+    jsonOutput.value = "";
+    jsonFileList.innerHTML = "";
+
+    // reset excel input
+    excelFile.value = "";
+
+    // reset PDF
+    files = [];
+    fileList.innerHTML = "";
+
+    // reset token (opsional)
+    //tokenJson.value = "";
+    //tokenUpload.value = "";
+}
+
