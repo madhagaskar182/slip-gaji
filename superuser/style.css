@@ -1,152 +1,60 @@
-/* Reset dan body */
-* { box-sizing: border-box; margin:0; padding:0; font-family: 'Inter', sans-serif; }
-body { background-color: #f3f4f6; color: #111; }
+/* Reset basic styles */
+* {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
+body {display:flex; min-height:100vh; background:#f0f2f5;}
 
 /* Sidebar */
 .sidebar {
-    width: 250px;
-    background-color: #1f2937;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
+  width: 250px;
+  background: #1e1e2f;
+  color: #fff;
+  padding: 20px;
+  display:flex;
+  flex-direction:column;
 }
-.sidebar h2 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    padding: 20px 0;
-    border-bottom: 1px solid #374151;
+.sidebar h2 {margin-bottom:30px; font-size:1.5rem;}
+.sidebar ul {list-style:none;}
+.sidebar ul li {
+  padding:15px 10px;
+  margin-bottom:10px;
+  cursor:pointer;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition:0.3s;
 }
-.sidebar button {
-    background: none;
-    border: none;
-    color: #fff;
-    text-align: left;
-    padding: 15px 20px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-.sidebar button:hover { background-color: #374151; }
-.sidebar #logoutBtn { margin-top: auto; border-top: 1px solid #374151; }
+.sidebar ul li:hover, .sidebar ul li.active {background:#3a3a55;}
 
 /* Main content */
-.main-content {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
-.menuContent { display: none; padding-top: 10px; }
+.main-content {flex:1; padding:30px; overflow-y:auto;}
+.menu-content {display:none;}
+.menu-content.active {display:block;}
 
-/* Cards */
-.card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+.dashboard-controls, .generate-controls, .upload-controls {
+  display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px; align-items:center;
 }
+.dashboard-controls label, .upload-controls label {display:flex; flex-direction:column; font-weight:600; color:#333;}
+.dashboard-controls input, .upload-controls input, select {
+  padding:8px 10px; border-radius:5px; border:1px solid #ccc; width:150px;
+}
+button {
+  padding:10px 20px;
+  border:none; border-radius:5px;
+  background:#4b6cb7; color:#fff;
+  cursor:pointer; transition:0.3s;
+}
+button:hover {background:#3a54a0;}
+#file-list, #excel-list {margin-top:10px;}
+#excel-list .file-item {
+  display:flex; justify-content:space-between; align-items:center; background:#e3e3e3; padding:5px 10px; border-radius:5px; margin-top:5px;
+}
+.file-item button {background:red; padding:2px 6px; border-radius:50%;}
 
-/* Login panel */
-#loginPanel {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.progress-container {
+  width:100%; background:#ccc; height:20px; border-radius:10px; overflow:hidden; margin-top:15px;
 }
-#loginPanel .login-box {
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    width: 360px;
+.progress-bar {
+  height:100%; width:0%; background:linear-gradient(90deg, #4b6cb7, #182848); transition:width 0.3s;
 }
-#loginPanel input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-}
-#loginPanel button {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    background-color: #2563eb;
-    color: #fff;
-    cursor: pointer;
-}
-#loginPanel button:hover { background-color: #1e40af; }
-
-/* Drop zones */
-.dropzone {
-    border: 2px dashed #9ca3af;
-    padding: 40px;
-    text-align: center;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s;
-    margin-bottom: 15px;
-}
-.dropzone.drag-over { background-color: #e0f2fe; }
-
-/* File list */
-.file-list div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #e5e7eb;
-    padding: 8px;
-    border-radius: 6px;
-    margin-bottom: 5px;
-}
-
-/* Buttons */
-button.primary { background-color: #2563eb; }
-button.primary:hover { background-color: #1e40af; }
-button.success { background-color: #16a34a; }
-button.success:hover { background-color: #15803d; }
-button.danger { background-color: #dc2626; }
-button.danger:hover { background-color: #b91c1c; }
-
-/* JSON preview */
-#jsonPreview {
-    background-color: #f9fafb;
-    padding: 15px;
-    border-radius: 6px;
-    height: 300px;
-    overflow: auto;
-    border: 1px solid #d1d5db;
-}
-
-/* Toast */
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #111;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 6px;
-    opacity: 0;
-    transform: translateX(50px);
-    transition: all 0.5s;
-    z-index: 1000;
-}
-.toast.show { opacity: 1; transform: translateX(0); }
-
-/* Upload PDF progress */
-#pdfLoading {
-    width: 100%;
-    background-color: #d1d5db;
-    border-radius: 6px;
-    display: none;
-    margin-top: 10px;
-}
-#pdfProgress {
-    background-color: #22c55e;
-    color: white;
-    text-align: center;
-    padding: 4px 0;
-    border-radius: 6px;
-    width: 0%;
-}
+#upload-status {margin-top:10px; font-weight:600; color:green;}
+pre {background:#f5f5f5; padding:10px; border-radius:5px; max-height:300px; overflow:auto;}
