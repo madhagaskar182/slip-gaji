@@ -212,7 +212,7 @@ function fileToBase64(file){
 }
 
 async function uploadPDFToGitHub(file){
-    const repo = "uvalios-idn/slip-gaji"; // ganti repo
+    const repo = "valios-idn/slip-gaji"; // ganti repo
     const branch = "main";
     const path = `files/${dashTahun.value || tahun.value}_${dashBulan.value || bulan.value}_${file.name}`;
     const content = await fileToBase64(file);
@@ -271,5 +271,4 @@ window.addEventListener("load", ()=>{
     }
 
     checkSession();
-});
 });
