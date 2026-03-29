@@ -35,21 +35,21 @@
   <!-- Main content -->
   <div class="main-content">
     <!-- Dashboard -->
-    <div id="dashboard" class="menuContent">
+    <div id="dashboard" class="menuContent card">
       <h3>Dashboard</h3>
-      <div>
+      <div style="margin-bottom:10px;">
         Tahun: <select id="selectYear"></select>
         Bulan: <select id="selectMonth"></select>
       </div>
-      <div style="margin-top:10px;">
+      <div style="margin-bottom:10px;">
         GitHub Token: <input type="text" id="githubToken" style="width:100%;">
       </div>
-      <button id="loadFiles" class="primary" style="margin-top:10px;">Tampilkan File</button>
+      <button id="loadFiles" class="primary">Tampilkan File</button>
       <ul id="fileList" class="file-list" style="margin-top:10px;"></ul>
     </div>
 
     <!-- Generate JSON -->
-    <div id="generateJson" class="menuContent">
+    <div id="generateJson" class="menuContent card">
       <h3>Generate JSON</h3>
       <div id="dropZoneExcel" class="dropzone">
         Drag & Drop Excel di sini atau klik
@@ -62,11 +62,14 @@
     </div>
 
     <!-- Upload PDF -->
-    <div id="uploadPdf" class="menuContent">
+    <div id="uploadPdf" class="menuContent card">
       <h3>Upload PDF</h3>
-      Tahun: <select id="pdfYear"></select>
-      Bulan: <select id="pdfMonth"></select>
-      <div id="dropZonePdf" class="dropzone">Drag & Drop PDF di sini atau klik
+      <div style="margin-bottom:10px;">
+        Tahun: <select id="pdfYear"></select>
+        Bulan: <select id="pdfMonth"></select>
+      </div>
+      <div id="dropZonePdf" class="dropzone">
+        Drag & Drop PDF di sini atau klik
         <input type="file" id="pdfInput" accept=".pdf" multiple hidden>
       </div>
       <div id="pdfFilesList" class="file-list"></div>
