@@ -125,7 +125,6 @@ uploadJSONBtn.onclick = async () => {
         console.log(result);
     }
 };
-};
 
 // PDF
 pdfDrop.onclick = ()=>pdfFiles.click();
