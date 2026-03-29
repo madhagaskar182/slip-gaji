@@ -55,6 +55,12 @@ function checkSession() {
 }
 
 async function login() {
+    if (!adminPass) {
+        alert("⚠️ Input password admin tidak ditemukan!");
+        console.error("adminPass undefined");
+        return;
+    }
+
     if (await hash(adminPass.value) === ADMIN_HASH) {
         const sessionData = { loggedIn: true, expiresAt: Date.now() + SESSION_DURATION };
         localStorage.setItem("adminSession", JSON.stringify(sessionData));
