@@ -47,6 +47,14 @@ function showExcel(){
         </div>
     `;
 }
+
+window.removeExcel = () => {
+    excelFile.value = "";
+    jsonFileList.innerHTML = "";
+    jsonOutput.value = "";
+    jsonData = {};
+};
+
 // GENERATE JSON
 generateJSONBtn.onclick = async () => {
     const file = excelFile.files[0];
