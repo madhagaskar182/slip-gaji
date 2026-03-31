@@ -162,16 +162,22 @@ button:hover {
 }
 
 /* DOWNLOAD */
-.download-btn {
-  display: block;
-  margin-top: 10px;
-  padding: 10px;
-  background: green;
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-}
 
+.download-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+
+  background: #0f172a;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
 /* HIDDEN */
 .hidden {
   display: none;
