@@ -35,6 +35,21 @@
 
     <div id="dashboardPage" class="card">
       <h2>Selamat Datang</h2>
+      <div class="filters">
+  <select id="dashTahun">
+    <option value="">Pilih Tahun</option>
+  </select>
+
+  <select id="dashBulan">
+    <option value="">Pilih Bulan</option>
+  </select>
+
+  <input type="text" id="dashToken" placeholder="GitHub Token">
+
+  <button id="btnLoadFile">Tampilkan</button>
+</div>
+
+<div id="dashboardList"></div>
     </div>
 
     <div id="jsonPage" class="card hidden">
