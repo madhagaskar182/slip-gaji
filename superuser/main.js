@@ -169,9 +169,10 @@ document.addEventListener("change", function(e){
 // ======================
 // NOTIF (ANTI HILANG SENDIRI)
 // ======================
-function showNotif(msg){
+function showNotif(msg, duration = 2000){
     let box = el("notifBox");
 
+    // buat kalau belum ada
     if(!box){
         box = document.createElement("div");
         box.id = "notifBox";
@@ -181,8 +182,14 @@ function showNotif(msg){
 
     box.innerText = msg;
     box.style.display = "block";
+    box.style.opacity = "1";
 
+    // hilang otomatis (fade out)
     setTimeout(()=>{
-        box.style.display = "none";
-    },2000);
+        box.style.opacity = "0";
+
+        setTimeout(()=>{
+            box.style.display = "none";
+        },300); // waktu fade
+    }, duration);
 }
