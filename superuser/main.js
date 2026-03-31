@@ -138,6 +138,8 @@ el("uploadJSONBtn").onclick = async ()=>{
 
     const result = await res.json();
 
+    console.log("Upload selesai");
+
     if(!res.ok){
         console.error(result);
     }else{
