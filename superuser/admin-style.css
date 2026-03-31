@@ -51,10 +51,12 @@ body {
   margin-bottom: 8px;
   cursor: pointer;
   transition: 0.2s;
+  position: relative;
+  z-index: 10;
 }
 
 .menu:hover {
-  background: #3B82F6;
+  background: #2563eb;
 }
 
 .menu.active {
