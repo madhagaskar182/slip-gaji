@@ -457,3 +457,32 @@ input#dashToken {
   font-size: 14px;
   color: #1e293b;
 }
+
+/* BULK ACTION */
+.bulk {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.bulk.hidden {
+  display: none;
+}
+
+/* CHECK ALL STYLE */
+.check-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e293b;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.check-all input {
+  transform: scale(1.2);
+  cursor: pointer;
+}
