@@ -253,6 +253,7 @@ button:hover {
   color: #e2e8f0;
   position: relative;
   height: 90px;
+  font-size:15px;
 
   display: flex;
   flex-direction: column;
