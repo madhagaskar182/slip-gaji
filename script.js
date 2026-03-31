@@ -74,8 +74,11 @@ document.querySelectorAll('.pdf-page').forEach(c => observer.observe(c));
 form.addEventListener('submit', async function(e) {
 e.preventDefault();
 
+showLoading();
+
 if (!dataLoaded) {
-errorDiv.textContent = 'Data masih dimuat, coba lagi...';
+showNotif('Data masih dimuat, coba lagi...', 'error');
+hideLoading();
 return;
 }
 
@@ -85,43 +88,46 @@ const emailInput = document.getElementById('email').value.trim().toLowerCase();
 const password = document.getElementById('password').value.trim();
 
 errorDiv.textContent = '';
-pesan.textContent = 'Loading...';
 viewer.innerHTML = '';
 viewerContainer.style.display = 'none';
 
 if (!tahun || !bulan || !emailInput || !password) {
-errorDiv.textContent = 'Semua field wajib diisi!';
+showNotif('Semua field wajib diisi!', 'error');
+hideLoading();
 return;
 }
 
 // Validasi email
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 if (!emailRegex.test(emailInput)) {
-errorDiv.textContent = 'Format email tidak valid!';
+showNotif('Format email tidak valid!', 'error');
+hideLoading();
 return;
 }
 
-// Cari pegawai - support case insensitive untuk email
+// Cari pegawai
 let pegawai = dataPegawai[emailInput] || 
 Object.values(dataPegawai).find(p => 
 p.email && p.email.toLowerCase() === emailInput
 );
 
 if (!pegawai) {
-errorDiv.textContent = 'Email tidak ditemukan!';
+showNotif('Email tidak ditemukan!', 'error');
+hideLoading();
 return;
 }
 
 // Verifikasi password
 const hashedInput = await hashPassword(password);
 if (pegawai.password !== hashedInput) {
-errorDiv.textContent = 'Password salah!';
+showNotif('Password salah!', 'error');
+hideLoading();
 return;
 }
 
-// ================= NAMA FILE CASE-INSENSITIVE =================
-const namaFileAsli = pegawai.namaFile;                    // Nama asli untuk tampilan & download
-  const namaFileUrl = namaFileAsli.toUpperCase();           // Nama untuk URL (case-insensitive)
+// Nama file
+const namaFileAsli = pegawai.namaFile;
+const namaFileUrl = namaFileAsli.toUpperCase();
 
 currentFileName = namaFileAsli + '.pdf';
 
@@ -132,7 +138,7 @@ try {
 currentUrl = url;
 pdfDoc = await pdfjsLib.getDocument(url).promise;
 
-// Buat canvas untuk setiap halaman
+// Render halaman
 for (let i = 1; i <= pdfDoc.numPages; i++) {
 const canvas = document.createElement('canvas');
 canvas.classList.add('pdf-page');
@@ -142,18 +148,20 @@ viewer.appendChild(canvas);
 
 setupLazyLoading();
 viewerContainer.style.display = 'block';
-pesan.textContent = `SLIP GAJI ${namaFileAsli} BERHASIL DIMUAT`;
+
+showNotif(`Slip gaji ${namaFileAsli} berhasil dimuat`, 'success');
+
 } catch (err) {
 console.error(err);
-errorDiv.textContent = 'PDF tidak ditemukan / gagal dimuat!';
-pesan.textContent = '';
+showNotif('PDF tidak ditemukan / gagal dimuat!', 'error');
 }
+
+hideLoading();
 });
 
 // ================= DOWNLOAD =================
 downloadBtn.addEventListener('click', async () => {
-if (!currentUrl) return alert('Tidak ada file yang dipilih');
-
+if (!currentUrl) return showNotif('Tidak ada file yang dipilih', 'error');
 try {
 const res = await fetch(currentUrl);
 if (!res.ok) throw new Error('File tidak ditemukan');
@@ -165,8 +173,36 @@ link.download = currentFileName;        // Menggunakan nama asli
 link.click();
 } catch (err) {
 console.error(err);
-alert('Gagal download file. Pastikan file tersedia.');
+showNotif('Gagal download file', 'error');
 }
+});
+
+downloadBtn.addEventListener('click', async () => {
+if (!currentUrl) {
+showNotif('Tidak ada file yang dipilih', 'error');
+return;
+}
+
+showLoading();
+
+try {
+const res = await fetch(currentUrl);
+if (!res.ok) throw new Error('File tidak ditemukan');
+
+const blob = await res.blob();
+const link = document.createElement('a');
+link.href = URL.createObjectURL(blob);
+link.download = currentFileName;
+link.click();
+
+showNotif('Download berhasil', 'success');
+
+} catch (err) {
+console.error(err);
+showNotif('Gagal download file', 'error');
+}
+
+hideLoading();
 });
 
 // ================= DOM READY =================
@@ -199,3 +235,24 @@ this.classList.replace("fa-eye-slash", "fa-eye");
 });
 });
 });
+
+// ===== LOADING =====
+function showLoading() {
+  document.getElementById("loadingOverlay").classList.remove("hidden");
+}
+
+function hideLoading() {
+  document.getElementById("loadingOverlay").classList.add("hidden");
+}
+
+// ===== NOTIF =====
+function showNotif(message, type = "success") {
+  const notif = document.getElementById("notif");
+
+  notif.innerText = message;
+  notif.className = `notif show ${type}`;
+
+  setTimeout(() => {
+    notif.classList.remove("show");
+  }, 3000);
+}
