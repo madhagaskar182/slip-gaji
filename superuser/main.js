@@ -340,42 +340,11 @@ window.deleteSingle = async (i) => {
     const file = window.dashboardFiles?.[i];
 
     if(!file) return alert("File tidak ditemukan");
-
     if(!confirm(`Hapus ${file.name}?`)) return;
 
-    await fetch(
-        `https://api.github.com/repos/valios-idn/slip-gaji/contents/${file.path}`,
-        {
-            method:"DELETE",
-            headers:{
-                Authorization:`Bearer ${token}`,
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify({
-                message:`delete ${file.name}`,
-                sha: file.sha
-            })
-        }
-    );
+    setDeleteStatus("Menghapus...");
 
-    loadPDFList();
-   
-};
-
-// ======================
-// DELETE MULTI
-// ======================
-async function deleteSelected(){
-    const token = el("dashToken").value.trim();
-
-    const checked = document.querySelectorAll(".file-check:checked");
-    if(checked.length === 0) return alert("Tidak ada file dipilih");
-
-    if(!confirm(`Hapus ${checked.length} file?`)) return;
-
-    for(const cb of checked){
-        const file = window.dashboardFiles[cb.dataset.index];
-
+    try{
         await fetch(
             `https://api.github.com/repos/valios-idn/slip-gaji/contents/${file.path}`,
             {
@@ -390,12 +359,55 @@ async function deleteSelected(){
                 })
             }
         );
+
+        setDeleteStatus("Selesai ✔");
+        loadPDFList();
+
+    }catch{
+        setDeleteStatus("Gagal ❌");
+    }
+};
+
+// ======================
+// DELETE MULTI
+// ======================
+async function deleteSelected(){
+    const token = el("dashToken").value.trim();
+    const checked = document.querySelectorAll(".file-check:checked");
+
+    if(checked.length === 0) return alert("Tidak ada file dipilih");
+    if(!confirm(`Hapus ${checked.length} file?`)) return;
+
+    setDeleteStatus("Menghapus...");
+
+    try{
+        for(const cb of checked){
+            const file = window.dashboardFiles[cb.dataset.index];
+
+            await fetch(
+                `https://api.github.com/repos/valios-idn/slip-gaji/contents/${file.path}`,
+                {
+                    method:"DELETE",
+                    headers:{
+                        Authorization:`Bearer ${token}`,
+                        "Content-Type":"application/json"
+                    },
+                    body: JSON.stringify({
+                        message:`delete ${file.name}`,
+                        sha: file.sha
+                    })
+                }
+            );
+        }
+
+        setDeleteStatus("Selesai ✔");
+
+    }catch{
+        setDeleteStatus("Gagal ❌");
     }
 
-    alert("✅ Selesai hapus");
     loadPDFList();
 }
-
 // ======================
 // RESET
 // ======================
@@ -406,4 +418,9 @@ function resetApp(){
     el("jsonOutput").value = "";
     el("jsonFileList").innerHTML = "";
     el("fileList").innerHTML = "";
+}
+
+function setDeleteStatus(text){
+    const elStatus = el("deleteStatus");
+    if(elStatus) elStatus.innerText = text;
 }
