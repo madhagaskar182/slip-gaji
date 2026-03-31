@@ -5,18 +5,55 @@ let jsonData = {};
 
 const el = id => document.getElementById(id);
 
-// INIT
+// ======================
+// INIT (AMAN)
+// ======================
 window.addEventListener("DOMContentLoaded", () => {
     checkSession();
 
+    // LOGIN
     el("loginBtn").onclick = login;
 
+    // LOGOUT
     el("menuLogout").onclick = () => {
         resetApp();
         logout();
     };
+
+    // NAVIGATION
+    el("menuDashboard").onclick = ()=>showPage("dashboard");
+    el("menuJSON").onclick = ()=>showPage("json");
+    el("menuUpload").onclick = ()=>showPage("upload");
+
+    // MENU ACTIVE
+    const menus = document.querySelectorAll('.menu');
+    menus.forEach(menu => {
+        menu.addEventListener('click', () => {
+            menus.forEach(m => m.classList.remove('active'));
+            menu.classList.add('active');
+        });
+    });
+
+    // EXCEL
+    el("excelDrop").onclick = ()=>el("excelFile").click();
+    el("excelFile").onchange = showExcel;
+
+    // PDF
+    el("pdfDrop").onclick = ()=>el("pdfFiles").click();
+    el("pdfFiles").onchange = e=>{
+        files = Array.from(e.target.files);
+        renderFiles();
+    };
+
+    // BUTTONS
+    el("generateJSONBtn").onclick = generateJSON;
+    el("uploadJSONBtn").onclick = uploadJSON;
+    el("uploadPDFBtn").onclick = uploadPDF;
 });
 
+// ======================
+// GLOBAL EVENT
+// ======================
 document.addEventListener("click", resetIdleTimer);
 document.addEventListener("keydown", resetIdleTimer);
 
@@ -29,32 +66,15 @@ function showPage(page){
     pages.forEach(p => el(p+"Page").classList.add("hidden"));
     el(page+"Page").classList.remove("hidden");
 
-    // reset ringan
     if(page !== "json"){
         el("jsonOutput").value = "";
         el("jsonFileList").innerHTML = "";
     }
 }
 
-el("menuDashboard").onclick = ()=>showPage("dashboard");
-el("menuJSON").onclick = ()=>showPage("json");
-el("menuUpload").onclick = ()=>showPage("upload");
-
-// MENU ACTIVE
-const menus = document.querySelectorAll('.menu');
-
-menus.forEach(menu => {
-  menu.addEventListener('click', () => {
-    menus.forEach(m => m.classList.remove('active'));
-    menu.classList.add('active');
-  });
-});
 // ======================
 // EXCEL
 // ======================
-el("excelDrop").onclick = ()=>el("excelFile").click();
-el("excelFile").onchange = showExcel;
-
 function showExcel(){
     const f = el("excelFile").files[0];
     if(!f) return;
@@ -77,7 +97,7 @@ window.removeExcel = ()=>{
 // ======================
 // GENERATE JSON
 // ======================
-el("generateJSONBtn").onclick = async ()=>{
+async function generateJSON(){
     const file = el("excelFile").files[0];
     if(!file) return alert("Pilih file!");
 
@@ -110,15 +130,15 @@ el("generateJSONBtn").onclick = async ()=>{
 
         jsonData = result;
         el("jsonOutput").value = JSON.stringify(result,null,2);
-
     };
+
     reader.readAsArrayBuffer(file);
-};
+}
 
 // ======================
 // UPLOAD JSON
 // ======================
-el("uploadJSONBtn").onclick = async () => {
+async function uploadJSON(){
     const token = el("tokenJson").value.trim();
     if (!token) return alert("Token kosong!");
 
@@ -144,7 +164,6 @@ el("uploadJSONBtn").onclick = async () => {
         }
     } catch (e) {}
 
-    // 🔁 Retry function
     const uploadWithRetry = async (retry = 3) => {
         try {
             const res = await fetch(url, {
@@ -161,17 +180,12 @@ el("uploadJSONBtn").onclick = async () => {
             });
 
             const result = await res.json();
-
             if (!res.ok) throw result;
 
-            // ✅ SUCCESS
             spinner.style.display = "none";
             statusText.innerText = "✅ Selesai upload";
-            console.log(result);
 
         } catch (err) {
-            console.error("Gagal upload:", err);
-
             if (retry > 0) {
                 statusText.innerText = `Retrying... (${retry})`;
                 await new Promise(r => setTimeout(r, 2000));
@@ -184,18 +198,11 @@ el("uploadJSONBtn").onclick = async () => {
     };
 
     await uploadWithRetry();
-};
+}
 
 // ======================
-// PDF (GRID VIEW)
+// PDF VIEW
 // ======================
-el("pdfDrop").onclick = ()=>el("pdfFiles").click();
-
-el("pdfFiles").onchange = e=>{
-    files = Array.from(e.target.files);
-    renderFiles();
-};
-
 function renderFiles(){
     const container = el("fileList");
     container.innerHTML = "";
@@ -203,34 +210,18 @@ function renderFiles(){
     files.forEach((f,i)=>{
         container.innerHTML += `
         <div class="file-card">
-            
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div class="file-name">${f.name}</div>
+            <div style="display:flex; justify-content:space-between;">
+                <div>${f.name}</div>
                 <div>
                     <span class="retry-btn hidden" id="retry${i}" onclick="retryUpload(${i})">🔄</span>
-                    <span class="remove-btn" onclick="removeFile(${i})">✖</span>
+                    <span onclick="removeFile(${i})">✖</span>
                 </div>
             </div>
-
-            <div class="progress">
-                <div class="bar" id="bar${i}"></div>
-            </div>
-
-            <div class="file-status" id="status${i}">Menunggu...</div>
-
+            <div class="progress"><div id="bar${i}" class="bar"></div></div>
+            <div id="status${i}">Menunggu...</div>
         </div>`;
     });
 }
-
-window.retryUpload = (i)=>{
-    const token = el("tokenUpload").value.trim();
-    const tahun = el("tahun").value;
-    const bulan = el("bulan").value;
-
-    if(!token) return;
-
-    uploadSingle(files[i], i, token, tahun, bulan);
-};
 
 window.removeFile = (i)=>{
     files.splice(i,1);
@@ -238,20 +229,19 @@ window.removeFile = (i)=>{
 };
 
 // ======================
-// UPLOAD PDF (REALTIME)
+// UPLOAD PDF
 // ======================
-el("uploadPDFBtn").onclick = async ()=>{
+async function uploadPDF(){
     const token = el("tokenUpload").value.trim();
     if(!token) return alert("Token kosong!");
 
     const tahun = el("tahun").value;
     const bulan = el("bulan").value;
 
-for(let i=0;i<files.length;i++){
-    await uploadSingle(files[i], i, token, tahun, bulan);
+    for(let i=0;i<files.length;i++){
+        await uploadSingle(files[i], i, token, tahun, bulan);
+    }
 }
-
-    console.log("Upload selesai");
 
 async function uploadSingle(file,i,token,tahun,bulan){
     const bar = el("bar"+i);
@@ -261,30 +251,13 @@ async function uploadSingle(file,i,token,tahun,bulan){
     try{
         retryBtn.classList.add("hidden");
 
-        status.innerText = "Checking...";
-        bar.style.width = "10%";
-        bar.style.background = "#22c55e";
+        status.innerText = "Uploading...";
+        bar.style.width = "50%";
 
         const path = `files/${tahun}/${bulan}/${file.name.toUpperCase()}`;
         const url = `https://api.github.com/repos/valios-idn/slip-gaji/contents/${path}`;
 
-        let sha = null;
-        const check = await fetch(url,{
-            headers:{Authorization:`Bearer ${token}`}
-        });
-
-        if(check.ok){
-            const data = await check.json();
-            sha = data.sha;
-        }
-
-        status.innerText = "Encoding...";
-        bar.style.width = "30%";
-
         const base64 = await toBase64(file);
-
-        status.innerText = "Uploading...";
-        bar.style.width = "70%";
 
         const res = await fetch(url,{
             method:"PUT",
@@ -294,30 +267,26 @@ async function uploadSingle(file,i,token,tahun,bulan){
             },
             body: JSON.stringify({
                 message:"upload slip",
-                content:base64,
-                sha
+                content:base64
             })
         });
 
-        if(!res.ok){
-            const err = await res.json();
-            throw new Error(err.message);
-        }
+        if(!res.ok) throw new Error();
 
         bar.style.width = "100%";
         status.innerText = "✅ Selesai";
 
-    }catch(e){
-        console.error(e);
-
-        bar.style.background = "#ef4444";
+    }catch{
         status.innerText = "❌ Gagal";
-
-        // 🔥 tampilkan tombol retry
         retryBtn.classList.remove("hidden");
     }
 }
-await new Promise(r => setTimeout(r, 300));
+
+window.retryUpload = (i)=>{
+    const token = el("tokenUpload").value.trim();
+    uploadSingle(files[i], i, token, el("tahun").value, el("bulan").value);
+};
+
 // ======================
 // BASE64
 // ======================
@@ -330,18 +299,15 @@ function toBase64(file){
 }
 
 // ======================
-// RESET
+// RESET (FIX UTAMA)
 // ======================
 function resetApp(){
     jsonData = {};
+    files = [];
+
     el("jsonOutput").value = "";
     el("jsonFileList").innerHTML = "";
-
     el("excelFile").value = "";
 
-    files = [];
     el("fileList").innerHTML = "";
 }
-
-// optional (kalau mau global)
-window.resetApp = resetApp;
