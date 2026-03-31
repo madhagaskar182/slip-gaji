@@ -72,6 +72,13 @@ body {
   padding: 25px;
   overflow-y: auto;
 }
+.content h3 {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 12px;
+    color: #ffd966;
+}
 
 /* ===== CARD ===== */
 .card {
