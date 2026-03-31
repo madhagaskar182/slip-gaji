@@ -369,17 +369,21 @@ async function loadPDFList(){
         }
 
         container.innerHTML = pdfFiles.map(f=>`
-            <div class="file-row">
-                <input type="checkbox" class="file-check" 
-                    data-name="${f.name}" 
-                    data-path="${f.path}" 
-                    data-sha="${f.sha}">
-                
-                <a href="${f.download_url}" target="_blank">
-                    📄 ${f.name}
-                </a>
-            </div>
-        `).join("");
+    <div class="file-row">
+        <input type="checkbox" class="file-check" 
+            data-name="${f.name}" 
+            data-path="${f.path}" 
+            data-sha="${f.sha}">
+
+        <a href="${f.download_url}" target="_blank" class="file-name">
+            📄 ${f.name}
+        </a>
+
+        <div class="file-action">
+            <a href="${f.download_url}" target="_blank" class="open-btn">Buka</a>
+        </div>
+    </div>
+`).join("");
 
     }catch{
         container.innerHTML = "❌ Gagal load file";
@@ -429,3 +433,8 @@ async function deleteSelectedFiles(){
     alert("Selesai hapus");
     loadPDFList(); // refresh
 }
+
+el("checkAll").onchange = function(){
+  document.querySelectorAll(".file-check")
+    .forEach(c => c.checked = this.checked);
+};
