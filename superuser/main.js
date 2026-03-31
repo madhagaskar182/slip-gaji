@@ -361,10 +361,12 @@ window.deleteSingle = async (i) => {
         );
 
         setDeleteStatus("Selesai ✔");
+        setTimeout(()=>setDeleteStatus(""), 2000);
         loadPDFList();
 
     }catch{
         setDeleteStatus("Gagal ❌");
+        setTimeout(()=>setDeleteStatus(""), 2000);
     }
 };
 
@@ -401,9 +403,11 @@ async function deleteSelected(){
         }
 
         setDeleteStatus("Selesai ✔");
+        setTimeout(()=>setDeleteStatus(""), 2000);
 
     }catch{
         setDeleteStatus("Gagal ❌");
+        setTimeout(()=>setDeleteStatus(""), 2000);
     }
 
     loadPDFList();
