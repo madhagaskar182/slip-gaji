@@ -326,6 +326,7 @@ window.deleteSingle = async (i) => {
     );
 
     loadPDFList();
+    const actionBar = el("dashboardActions");
 };
 
 // ======================
@@ -360,6 +361,7 @@ async function deleteSelected(){
 
     alert("✅ Selesai hapus");
     loadPDFList();
+    const actionBar = el("dashboardActions");
 }
 
 // ======================
