@@ -313,75 +313,38 @@ function resetApp(){
 }
 
 // ======================
-// DASHBOARD FINAL (TOKEN INPUT)
+// DASHBOARD (MATCH UPLOAD STYLE)
 // ======================
 
-async function fetchGitHub(path, token){
-    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
-    
-    const res = await fetch(url,{
-        headers: token ? {
-            Authorization: "Bearer " + token
-        } : {}
-    });
+async function loadPDFList(){
+    const token = el("dashToken").value.trim();
+    if(!token) return alert("Token kosong!");
 
-    return res.json();
-}
-
-// LOAD TAHUN (tanpa token)
-async function loadTahun(){
-    const tahunSelect = el("dashTahun");
-    tahunSelect.innerHTML = `<option value="">Pilih Tahun</option>`;
-
-    const years = await fetchGitHub(GITHUB_BASE);
-
-    years
-        .filter(y => y.type === "dir")
-        .sort((a,b)=>a.name.localeCompare(b.name))
-        .forEach(y=>{
-            tahunSelect.innerHTML += `<option value="${y.name}">${y.name}</option>`;
-        });
-}
-
-// LOAD BULAN
-async function loadBulan(tahun){
-    const bulanSelect = el("dashBulan");
-    bulanSelect.innerHTML = `<option value="">Pilih Bulan</option>`;
-
-    if(!tahun) return;
-
-    const months = await fetchGitHub(`${GITHUB_BASE}/${tahun}`);
-
-    months
-        .filter(m => m.type === "dir")
-        .sort((a,b)=>a.name.localeCompare(b.name))
-        .forEach(m=>{
-            bulanSelect.innerHTML += `<option value="${m.name}">${m.name}</option>`;
-        });
-}
-
-// LOAD FILE (pakai token manual)
-async function loadFilesWithToken(){
     const tahun = el("dashTahun").value;
     const bulan = el("dashBulan").value;
-    const token = el("dashToken").value.trim();
-
-    const container = el("dashboardList");
 
     if(!tahun || !bulan){
         return alert("Pilih tahun & bulan!");
     }
 
-    if(!token){
-        return alert("Token wajib diisi!");
-    }
-
+    const container = el("dashboardList");
     container.innerHTML = "Loading...";
 
     try{
-        const files = await fetchGitHub(`${GITHUB_BASE}/${tahun}/${bulan}`, token);
+        const path = `files/${tahun}/${bulan}`;
+        const url = `https://api.github.com/repos/valios-idn/slip-gaji/contents/${path}`;
 
-        const pdfFiles = files
+        const res = await fetch(url,{
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+        });
+
+        if(!res.ok) throw new Error();
+
+        const data = await res.json();
+
+        const pdfFiles = data
             .filter(f => f.name.toLowerCase().endsWith(".pdf"))
             .sort((a,b)=>a.name.localeCompare(b.name));
 
