@@ -60,6 +60,11 @@ window.addEventListener("DOMContentLoaded", () => {
     el("uploadPDFBtn").onclick = uploadPDF;
 });
 
+el("selectAll").onchange = function(){
+    document.querySelectorAll(".file-check").forEach(cb=>{
+        cb.checked = this.checked;
+    });
+};
 // ======================
 // GLOBAL EVENT
 // ======================
