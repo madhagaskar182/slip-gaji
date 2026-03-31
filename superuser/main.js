@@ -284,3 +284,4 @@ function resetApp(){
 }
 
 window.resetApp = resetApp;
+}
