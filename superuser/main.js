@@ -15,7 +15,7 @@ window.addEventListener("DOMContentLoaded", () => {
         resetApp();
         logout();
     };
-});
+};
 
 document.addEventListener("click", resetIdleTimer);
 document.addEventListener("keydown", resetIdleTimer);
