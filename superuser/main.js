@@ -262,12 +262,27 @@ async function uploadPDF(){
     setTimeout(()=>setUploadStatus(""), 2000);
 }
 
-async function uploadSingle(file,token,tahun,bulan){
+async function uploadSingle(file, token, tahun, bulan){
     const path = `files/${tahun}/${bulan}/${file.name.toUpperCase()}`;
     const url = `https://api.github.com/repos/valios-idn/slip-gaji/contents/${path}`;
 
     const base64 = await toBase64(file);
 
+    let sha = null;
+
+    // 🔥 CEK FILE SUDAH ADA ATAU BELUM
+    try{
+        const get = await fetch(url,{
+            headers:{ Authorization:`Bearer ${token}` }
+        });
+
+        if(get.ok){
+            const data = await get.json();
+            sha = data.sha; // penting!
+        }
+    }catch{}
+
+    // 🔥 UPLOAD / UPDATE
     const res = await fetch(url,{
         method:"PUT",
         headers:{
@@ -276,12 +291,16 @@ async function uploadSingle(file,token,tahun,bulan){
         },
         body: JSON.stringify({
             message:"upload slip",
-            content:base64
+            content:base64,
+            sha: sha // 🔥 ini kunci fix 422
         })
     });
 
+    const result = await res.json();
+
     if(!res.ok){
-        throw new Error("Upload gagal");
+        console.error(result);
+        throw new Error(result.message);
     }
 }
 
