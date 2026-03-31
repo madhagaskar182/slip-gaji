@@ -258,6 +258,7 @@ async function loadPDFList(){
     const tahun = el("dashTahun").value;
     const bulan = el("dashBulan").value;
     const container = el("dashboardList");
+    const bulkActions = el("dashboardActions");  
 
     if(!token) return alert("Token kosong!");
     if(!tahun || !bulan) return alert("Pilih tahun & bulan!");
@@ -326,7 +327,7 @@ window.deleteSingle = async (i) => {
     );
 
     loadPDFList();
-    const actionBar = el("dashboardActions");
+   
 };
 
 // ======================
@@ -361,7 +362,6 @@ async function deleteSelected(){
 
     alert("✅ Selesai hapus");
     loadPDFList();
-    const actionBar = el("dashboardActions");
 }
 
 // ======================
