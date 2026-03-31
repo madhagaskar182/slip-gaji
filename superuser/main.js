@@ -27,6 +27,10 @@ window.addEventListener("DOMContentLoaded", () => {
     el("menuUpload").onclick = ()=>showPage("upload");
     el("btnLoadFile").onclick = loadPDFList;
     el("btnDeleteFile").onclick = deleteSelectedFiles;
+    el("checkAll").onchange = function(){
+    document.querySelectorAll(".file-check")
+        .forEach(c => c.checked = this.checked);
+};
 
      // ✅ FIX PENTING
     const btn = el("btnLoadFile");
@@ -327,6 +331,7 @@ function resetApp(){
 // DASHBOARD (MATCH UPLOAD STYLE)
 // ======================
 
+el("bulkActions").classList.add("hidden");
 async function loadPDFList(){
     const token = el("dashToken").value.trim();
     if(!token) return alert("Token kosong!");
@@ -438,3 +443,19 @@ el("checkAll").onchange = function(){
   document.querySelectorAll(".file-check")
     .forEach(c => c.checked = this.checked);
 };
+
+document.addEventListener("change", function(e){
+    if(e.target.classList.contains("file-check")){
+        const all = document.querySelectorAll(".file-check");
+        const checked = document.querySelectorAll(".file-check:checked");
+
+        el("checkAll").checked = all.length === checked.length;
+    }
+});
+
+document.addEventListener("change", ()=>{
+    const total = document.querySelectorAll(".file-check").length;
+    const checked = document.querySelectorAll(".file-check:checked").length;
+
+    el("fileCount").innerText = `Total: ${total} | Dipilih: ${checked}`;
+});
