@@ -235,11 +235,26 @@ async function uploadPDF(){
     const tahun = el("tahun").value;
     const bulan = el("bulan").value;
 
-    for(let i=0;i<files.length;i++){
-        await uploadSingle(files[i], token, tahun, bulan);
+    if(files.length === 0){
+        return alert("Tidak ada file");
     }
 
-    alert("✅ Upload selesai");
+    setUploadStatus("Uploading...");
+
+    try{
+        for(let i=0;i<files.length;i++){
+            setUploadStatus(`Uploading (${i+1}/${files.length})...`);
+            await uploadSingle(files[i], token, tahun, bulan);
+        }
+
+        setUploadStatus("Selesai ✔");
+
+    }catch{
+        setUploadStatus("Gagal ❌");
+    }
+
+    // 🔥 auto hilang
+    setTimeout(()=>setUploadStatus(""), 2000);
 }
 
 async function uploadSingle(file,token,tahun,bulan){
@@ -248,7 +263,7 @@ async function uploadSingle(file,token,tahun,bulan){
 
     const base64 = await toBase64(file);
 
-    await fetch(url,{
+    const res = await fetch(url,{
         method:"PUT",
         headers:{
             Authorization:`Bearer ${token}`,
@@ -259,6 +274,10 @@ async function uploadSingle(file,token,tahun,bulan){
             content:base64
         })
     });
+
+    if(!res.ok){
+        throw new Error("Upload gagal");
+    }
 }
 
 function toBase64(file){
