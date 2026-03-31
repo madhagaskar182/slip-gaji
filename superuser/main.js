@@ -20,10 +20,20 @@ window.addEventListener("DOMContentLoaded", () => {
         logout();
     };
 
+
     // NAVIGATION
     el("menuDashboard").onclick = ()=>showPage("dashboard");
     el("menuJSON").onclick = ()=>showPage("json");
     el("menuUpload").onclick = ()=>showPage("upload");
+
+     // ✅ FIX PENTING
+    const btn = el("btnLoadFile");
+    if(btn){
+        btn.addEventListener("click", loadPDFList);
+    } else {
+        console.error("❌ tombol btnLoadFile tidak ditemukan");
+    }
+});
 
     // MENU ACTIVE
     const menus = document.querySelectorAll('.menu');
@@ -317,22 +327,35 @@ function resetApp(){
 // ======================
 
 async function loadPDFList(){
-    const token = el("dashToken").value.trim();
-    if(!token) return alert("Token kosong!");
+    console.log("🔥 tombol diklik");
 
-    const tahun = el("dashTahun").value;
-    const bulan = el("dashBulan").value;
+    const token = el("dashToken")?.value.trim();
+    const tahun = el("dashTahun")?.value;
+    const bulan = el("dashBulan")?.value;
+    const container = el("dashboardList");
 
-    if(!tahun || !bulan){
-        return alert("Pilih tahun & bulan!");
+    if(!container){
+        console.error("❌ dashboardList tidak ditemukan");
+        return;
     }
 
-    const container = el("dashboardList");
+    if(!token){
+        alert("Token kosong!");
+        return;
+    }
+
+    if(!tahun || !bulan){
+        alert("Pilih tahun & bulan!");
+        return;
+    }
+
     container.innerHTML = "Loading...";
 
     try{
         const path = `files/${tahun}/${bulan}`;
         const url = `https://api.github.com/repos/valios-idn/slip-gaji/contents/${path}`;
+
+        console.log("📡 Fetch:", url);
 
         const res = await fetch(url,{
             headers:{
@@ -340,7 +363,13 @@ async function loadPDFList(){
             }
         });
 
-        if(!res.ok) throw new Error();
+        console.log("STATUS:", res.status);
+
+        if(!res.ok){
+            const text = await res.text();
+            console.error("❌ ERROR:", text);
+            throw new Error();
+        }
 
         const data = await res.json();
 
@@ -359,7 +388,8 @@ async function loadPDFList(){
             </a>
         `).join("");
 
-    }catch{
-        container.innerHTML = "❌ Gagal load file";
+    }catch(err){
+        console.error(err);
+        container.innerHTML = "❌ Gagal load file (cek console)";
     }
 }
