@@ -40,6 +40,15 @@ el("menuDashboard").onclick = ()=>showPage("dashboard");
 el("menuJSON").onclick = ()=>showPage("json");
 el("menuUpload").onclick = ()=>showPage("upload");
 
+// MENU ACTIVE
+const menus = document.querySelectorAll('.menu');
+
+menus.forEach(menu => {
+  menu.addEventListener('click', () => {
+    menus.forEach(m => m.classList.remove('active'));
+    menu.classList.add('active');
+  });
+});
 // ======================
 // EXCEL
 // ======================
