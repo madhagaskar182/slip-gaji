@@ -3,10 +3,13 @@ import { login, checkSession, resetIdleTimer, logout, hashPass } from './login.j
 let files = [];
 let jsonData = {};
 
+const el = id => document.getElementById(id);
+
 // INIT
 window.addEventListener("DOMContentLoaded", checkSession);
-document.getElementById("loginBtn").onclick = login;
-document.getElementById("menuLogout").onclick = () => {
+
+el("loginBtn").onclick = login;
+el("menuLogout").onclick = () => {
     resetApp();
     logout();
 };
@@ -14,82 +17,87 @@ document.getElementById("menuLogout").onclick = () => {
 document.addEventListener("click", resetIdleTimer);
 document.addEventListener("keydown", resetIdleTimer);
 
+// ======================
 // NAVIGATION
-const pages = ["dashboardPage","jsonPage","uploadPage"];
+// ======================
+const pages = ["dashboard","json","upload"];
 
 function showPage(page){
-    pages.forEach(p => document.getElementById(p).classList.add("hidden"));
-    document.getElementById(page+"Page").classList.remove("hidden");
+    pages.forEach(p => el(p+"Page").classList.add("hidden"));
+    el(page+"Page").classList.remove("hidden");
 
-    // 🔥 reset saat pindah halaman
+    // reset ringan
     if(page !== "json"){
-        jsonOutput.value = "";
-        jsonFileList.innerHTML = "";
+        el("jsonOutput").value = "";
+        el("jsonFileList").innerHTML = "";
     }
 }
 
-menuDashboard.onclick = ()=>showPage("dashboard");
-menuJSON.onclick = ()=>showPage("json");
-menuUpload.onclick = ()=>showPage("upload");
+el("menuDashboard").onclick = ()=>showPage("dashboard");
+el("menuJSON").onclick = ()=>showPage("json");
+el("menuUpload").onclick = ()=>showPage("upload");
 
+// ======================
 // EXCEL
-excelDrop.onclick = ()=>excelFile.click();
-excelFile.onchange = showExcel;
+// ======================
+el("excelDrop").onclick = ()=>el("excelFile").click();
+el("excelFile").onchange = showExcel;
 
 function showExcel(){
-    const f = excelFile.files[0];
+    const f = el("excelFile").files[0];
     if(!f) return;
 
-    jsonFileList.innerHTML = `
+    el("jsonFileList").innerHTML = `
         <div class="file-item">
             ${f.name}
-            <span style="cursor:pointer;color:red;" onclick="removeExcel()">✖</span>
+            <span onclick="removeExcel()">✖</span>
         </div>
     `;
 }
 
-window.removeExcel = () => {
-    excelFile.value = "";
-    jsonFileList.innerHTML = "";
-    jsonOutput.value = "";
+window.removeExcel = ()=>{
+    el("excelFile").value = "";
+    el("jsonFileList").innerHTML = "";
+    el("jsonOutput").value = "";
     jsonData = {};
 };
 
+// ======================
 // GENERATE JSON
-generateJSONBtn.onclick = async () => {
-    const file = excelFile.files[0];
-    if (!file) return alert("Pilih file!");
+// ======================
+el("generateJSONBtn").onclick = async ()=>{
+    const file = el("excelFile").files[0];
+    if(!file) return alert("Pilih file!");
 
     const reader = new FileReader();
 
-    reader.onload = async e => {
-        const wb = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
+    reader.onload = async e=>{
+        const wb = XLSX.read(new Uint8Array(e.target.result), {type:"array"});
         const sheet = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+        const rows = XLSX.utils.sheet_to_json(sheet,{defval:""});
 
         const result = {};
 
-        for (let row of rows) {
-            // 🔥 NORMALISASI HEADER (ANTI ERROR)
+        for(let row of rows){
             const normalized = {};
-            for (let key in row) {
-                normalized[key.toLowerCase().replace(/\s/g, "")] = row[key];
+            for(let key in row){
+                normalized[key.toLowerCase().replace(/\s/g,"")] = row[key];
             }
 
-            const email = (normalized.email || "").toLowerCase().trim();
-            const nama = (normalized.namafile || "").toUpperCase().trim();
-            const pass = (normalized.password || "").toString().trim();
+            const email = (normalized.email||"").toLowerCase().trim();
+            const nama = (normalized.namafile||"").toUpperCase().trim();
+            const pass = (normalized.password||"").toString().trim();
 
-            if (!email || !nama || !pass) continue;
+            if(!email || !nama || !pass) continue;
 
             result[email] = {
                 namaFile: nama,
-                password: await hashPass(pass) // SHA-256
+                password: await hashPass(pass)
             };
         }
 
         jsonData = result;
-        jsonOutput.value = JSON.stringify(result, null, 2);
+        el("jsonOutput").value = JSON.stringify(result,null,2);
 
         alert("✅ JSON berhasil dibuat!");
     };
@@ -97,96 +105,136 @@ generateJSONBtn.onclick = async () => {
     reader.readAsArrayBuffer(file);
 };
 
+// ======================
 // UPLOAD JSON
-uploadJSONBtn.onclick = async () => {
-    const token = tokenJson.value.trim();
-    if (!token) return alert("Token kosong!");
+// ======================
+el("uploadJSONBtn").onclick = async ()=>{
+    const token = el("tokenJson").value.trim();
+    if(!token) return alert("Token kosong!");
 
     const url = `https://api.github.com/repos/valios-idn/slip-gaji/contents/dataPegawai.json`;
-
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(jsonData, null, 2))));
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(jsonData,null,2))));
 
     let sha = null;
 
-    // 🔍 CEK FILE SUDAH ADA / BELUM
-    try {
-        const get = await fetch(url, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (get.ok) {
+    try{
+        const get = await fetch(url,{headers:{Authorization:`Bearer ${token}`}});
+        if(get.ok){
             const data = await get.json();
-            sha = data.sha; // wajib kalau update file
+            sha = data.sha;
         }
-    } catch (e) {
-        console.error("GET error:", e);
-    }
+    }catch(e){}
 
-    // 🚀 UPLOAD
-    const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+    const res = await fetch(url,{
+        method:"PUT",
+        headers:{
+            Authorization:`Bearer ${token}`,
+            "Content-Type":"application/json"
         },
         body: JSON.stringify({
-            message: "update dataPegawai",
-            content: content,
-            sha: sha // 🔥 penting!
+            message:"update dataPegawai",
+            content,
+            sha
         })
     });
 
     const result = await res.json();
 
-    // ✅ HANDLE RESPONSE
-    if (!res.ok) {
+    if(!res.ok){
         console.error(result);
-        alert("❌ Upload gagal: " + (result.message || ""));
-    } else {
+        alert("❌ Upload gagal");
+    }else{
         alert("✅ JSON berhasil diupload!");
         console.log(result);
     }
 };
 
-// PDF
-pdfDrop.onclick = ()=>pdfFiles.click();
-pdfFiles.onchange = e=>{
+// ======================
+// PDF (GRID VIEW)
+// ======================
+el("pdfDrop").onclick = ()=>el("pdfFiles").click();
+
+el("pdfFiles").onchange = e=>{
     files = Array.from(e.target.files);
     renderFiles();
 };
 
 function renderFiles(){
-    fileList.innerHTML="";
+    const container = el("fileList");
+    container.innerHTML = "";
+
     files.forEach((f,i)=>{
-        fileList.innerHTML+=`${f.name} <button onclick="removeFile(${i})">X</button><br>`;
+        container.innerHTML += `
+        <div class="file-card">
+            <div class="file-name">${f.name}</div>
+
+            <div class="progress">
+                <div class="bar" id="bar${i}"></div>
+            </div>
+
+            <div class="file-status" id="status${i}">Menunggu...</div>
+        </div>`;
     });
 }
 
-window.removeFile = i=>{
-    files.splice(i,1);
-    renderFiles();
+// ======================
+// UPLOAD PDF (REALTIME)
+// ======================
+el("uploadPDFBtn").onclick = async ()=>{
+    const token = el("tokenUpload").value.trim();
+    if(!token) return alert("Token kosong!");
+
+    const tahun = el("tahun").value;
+    const bulan = el("bulan").value;
+
+    await Promise.all(
+        files.map((f,i)=>uploadSingle(f,i,token,tahun,bulan))
+    );
+
+    alert("✅ Semua upload selesai!");
 };
 
-// UPLOAD PDF
-uploadPDFBtn.onclick = async ()=>{
-    const token = tokenUpload.value;
+async function uploadSingle(file,i,token,tahun,bulan){
+    const bar = el("bar"+i);
+    const status = el("status"+i);
 
-    const tahunVal = document.getElementById("tahun").value;
-    const bulanVal = document.getElementById("bulan").value;
+    try{
+        status.innerText = "Encoding...";
+        bar.style.width = "20%";
 
-    for(let f of files){
-        const base64 = await toBase64(f);
+        const base64 = await toBase64(file);
 
-        await fetch(`https://api.github.com/repos/valios-idn/slip-gaji/contents/files/${tahunVal}/${bulanVal}/${f.name}`,{
+        status.innerText = "Uploading...";
+        bar.style.width = "60%";
+
+        const url = `https://api.github.com/repos/valios-idn/slip-gaji/contents/files/${tahun}/${bulan}/${file.name.toUpperCase()}`;
+
+        const res = await fetch(url,{
             method:"PUT",
-            headers:{Authorization:`Bearer ${token}`},
-            body: JSON.stringify({message:"upload", content:base64})
+            headers:{
+                Authorization:`Bearer ${token}`,
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({
+                message:"upload slip",
+                content:base64
+            })
         });
+
+        if(!res.ok) throw new Error();
+
+        bar.style.width = "100%";
+        status.innerText = "✅ Selesai";
+
+    }catch(e){
+        bar.style.background = "#ef4444";
+        status.innerText = "❌ Gagal";
     }
+}
 
-    alert("Upload selesai!");
-};
-
+// ======================
+// BASE64
+// ======================
 function toBase64(file){
     return new Promise(r=>{
         const fr = new FileReader();
@@ -195,22 +243,18 @@ function toBase64(file){
     });
 }
 
-//RESET
+// ======================
+// RESET
+// ======================
 function resetApp(){
-    // reset JSON
     jsonData = {};
-    jsonOutput.value = "";
-    jsonFileList.innerHTML = "";
+    el("jsonOutput").value = "";
+    el("jsonFileList").innerHTML = "";
 
-    // reset excel input
-    excelFile.value = "";
+    el("excelFile").value = "";
 
-    // reset PDF
     files = [];
-    fileList.innerHTML = "";
-
-    // reset token (opsional)
-    //tokenJson.value = "";
-    //tokenUpload.value = "";
+    el("fileList").innerHTML = "";
 }
 
+window.resetApp = resetApp;
